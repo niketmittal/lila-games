@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LILA BLACK — Player Journey Visualizer</title>
+  <meta name="description" content="Level Designer Toolkit for LILA BLACK — kill zones, player paths, death zones, looting patterns." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/frontend/style.css" />
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══════════════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">LILA BLACK</span>
+      <span class="brand-sub">Level Designer Toolkit</span>
+    </div>
+    <div class="header-stats">
+      <span class="stat-chip" id="statMatches">— matches</span>
+      <span class="stat-chip" id="statPlayers">—</span>
+      <span class="stat-chip" id="statEvents">—</span>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN LAYOUT ═══════════════════════════════════════════════════════ -->
+  <div class="app-layout">
+
+    <!-- ── LEFT SIDEBAR ──────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+
+      <!-- Map Selector -->
+      <section class="panel">
+        <div class="panel-label">MAP</div>
+        <div class="map-tabs" id="mapTabs">
+          <button class="map-tab active" data-map="AmbroseValley">
+            <span class="tab-icon">🗺</span><span class="tab-text">Ambrose Valley</span>
+          </button>
+          <button class="map-tab" data-map="GrandRift">
+            <span class="tab-icon">🏔</span><span class="tab-text">Grand Rift</span>
+          </button>
+          <button class="map-tab" data-map="Lockdown">
+            <span class="tab-icon">🏙</span><span class="tab-text">Lockdown</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Date + Match -->
+      <section class="panel">
+        <div class="panel-label">DATE</div>
+        <select id="dateSelect" class="styled-select">
+          <option value="">All dates</option>
+        </select>
+
+        <div class="panel-label" style="margin-top:12px">MATCH</div>
+        <select id="matchSelect" class="styled-select">
+          <option value="">— select a match —</option>
+        </select>
+        <div class="match-meta" id="matchMeta"></div>
+
+        <!-- Prev / Next navigation -->
+        <div class="match-nav">
+          <button class="nav-btn" id="prevMatch" disabled title="Previous match">‹ Prev</button>
+          <span class="match-counter" id="matchCounter">— / —</span>
+          <button class="nav-btn" id="nextMatch" disabled title="Next match">Next ›</button>
+        </div>
+      </section>
+
+      <!-- Player Types -->
+      <section class="panel">
+        <div class="panel-label">SHOW PLAYERS</div>
+        <div class="toggle-row">
+          <label class="toggle-item">
+            <input type="checkbox" id="showHumans" checked />
+            <span class="toggle-track"></span>
+            <span class="toggle-label">Humans</span>
+            <span class="toggle-hint">UUID ids</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="showBots" checked />
+            <span class="toggle-track"></span>
+            <span class="toggle-label">Bots</span>
+            <span class="toggle-hint">Numeric ids</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Event Overlay -->
+      <section class="panel">
+        <div class="panel-label">EVENT OVERLAY</div>
+        <div class="event-filters" id="eventFilters">
+          <label class="evt-check"><input type="checkbox" id="evtKill" checked /><span class="evt-dot" style="background:#ff9f1c"></span>Kill (human → human)</label>
+          <label class="evt-check"><input type="checkbox" id="evtKilled" checked /><span class="evt-dot" style="background:#ff4444"></span>Death (by human)</label>
+          <label class="evt-check"><input type="checkbox" id="evtBotKill" checked /><span class="evt-dot" style="background:#ffd93d"></span>Bot Kill (human → bot)</label>
+          <label class="evt-check"><input type="checkbox" id="evtBotKilled" checked /><span class="evt-dot" style="background:#c77dff"></span>Bot Death</label>
+          <label class="evt-check"><input type="checkbox" id="evtStorm" checked /><span class="evt-dot" style="background:#a855f7"></span>Storm Death</label>
+          <label class="evt-check"><input type="checkbox" id="evtLoot" checked /><span class="evt-dot" style="background:#4ade80"></span>Loot Pickup</label>
+        </div>
+      </section>
+
+      <!-- Design Presets -->
+      <section class="panel">
+        <div class="panel-label">DESIGN QUESTIONS</div>
+        <div class="preset-btns" id="presetBtns">
+          <button class="preset-btn active" data-preset="Balanced">Balanced Read</button>
+          <button class="preset-btn" data-preset="Combat">Combat Balance</button>
+          <button class="preset-btn" data-preset="Storm">Storm Pressure</button>
+          <button class="preset-btn" data-preset="Loot">Loot Flow</button>
+          <button class="preset-btn" data-preset="DeadSpace">Dead Space</button>
+        </div>
+        <div class="preset-note" id="presetNote">Balanced Read: paths and all core events with no heatmap bias.</div>
+      </section>
+
+      <!-- Heatmap -->
+      <section class="panel">
+        <div class="panel-label">HEATMAP OVERLAY</div>
+        <div class="heatmap-btns">
+          <button class="heat-btn active" data-heat="off">Off</button>
+          <button class="heat-btn" data-heat="KillZones">Kill Zones</button>
+          <button class="heat-btn" data-heat="DeathZones">Death Zones</button>
+          <button class="heat-btn" data-heat="Traffic">Traffic</button>
+          <button class="heat-btn" data-heat="LootZones">Loot Zones</button>
+          <button class="heat-btn" data-heat="StormDeaths">Storm Deaths</button>
+        </div>
+        <div class="heatmap-status" id="heatmapStatus"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-label">DATASET TAKEAWAYS</div>
+        <div class="dataset-summary" id="datasetSummary">Loading dataset-level insights…</div>
+        <div class="outlier-list" id="outlierList"></div>
+      </section>
+
+    </aside>
+
+    <!-- ── MAIN CONTENT (canvas + analytics) ─────────────────────────────── -->
+    <main class="main-content">
+
+      <!-- Canvas Area -->
+      <div class="canvas-area">
+        <div class="canvas-container">
+          <canvas id="mapCanvas" width="1024" height="1024"></canvas>
+          <div class="canvas-overlay" id="canvasOverlay">
+            <div class="overlay-msg">
+              <div class="overlay-icon">🎮</div>
+              <div>Select a map and match to begin</div>
+            </div>
+          </div>
+          <div class="tooltip" id="tooltip"></div>
+        </div>
+
+        <!-- Legend overlaid on canvas -->
+        <div class="legend">
+          <div class="legend-section">
+            <div class="legend-title">PATHS</div>
+            <div class="legend-row"><span class="legend-line human-line"></span> Human</div>
+            <div class="legend-row"><span class="legend-line bot-line"></span> Bot</div>
+          </div>
+          <div class="legend-section">
+            <div class="legend-title">EVENTS</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#ff9f1c">⚔</span> Kill</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#ff4444">✕</span> Killed</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#ffd93d">★</span> Bot Kill</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#a855f7">⚡</span> Storm</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#4ade80">◆</span> Loot</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-bar">
+        <button class="play-btn" id="playToggle" title="Play / Pause" disabled>▶</button>
+        <button class="reset-btn" id="timelineReset" title="Reset Timeline" disabled>↺</button>
+        <div class="timeline-wrap">
+          <input class="timeline-slider" id="timelineSlider" type="range" min="0" max="1000" step="1" value="0" disabled />
+          <div class="timeline-labels">
+            <span id="timelineStart">00:00</span>
+            <span id="timelineCurrent">00:00</span>
+            <span id="timelineEnd">00:00</span>
+          </div>
+        </div>
+        <div class="speed-control">
+          <span class="speed-label">SPEED</span>
+          <select class="speed-select" id="speedSelect" disabled>
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+            <option value="4">4x</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── INLINE ANALYTICS PANEL ──────────────────────────── -->
+      <div class="analytics-bar">
+        <div class="analytics-bar-title">📊 Match Analytics</div>
+        <div class="insight-highlights" id="insightHighlights"></div>
+        <div id="analyticsContent">
+          <div class="analytics-empty">Select a match to see analytics.</div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay hidden" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Loading…</div>
+  </div>
+
+  <script src="/frontend/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,2011 @@
+{
+  "generated_at": "2026-04-14T08:52:49.969974+00:00",
+  "total_matches": 796,
+  "outlier_matches": 58,
+  "quick_takeaways": [
+    "Lockdown has the highest dead-space median (96.89%).",
+    "Lockdown has the highest storm-affected match rate (9.9%).",
+    "Lockdown has the lowest loot yield (12.0 loot per human).",
+    "GrandRift has the highest outlier concentration (10.2% of matches flagged).",
+    "Flagged 58 outlier matches out of 796 total matches (7.3%)."
+  ],
+  "map_summaries": {
+    "AmbroseValley": {
+      "matches": 566,
+      "outlier_matches": 38,
+      "outlier_rate_pct": 6.7,
+      "storm_match_rate_pct": 3.0,
+      "median_metrics": {
+        "storm_death_pct": 0.0,
+        "dead_space_pct": 96.75,
+        "kill_cluster_pct": 40.835,
+        "loot_per_human": 15.0,
+        "first_engage_sec": 0.13
+      },
+      "top_risks": [
+        {
+          "risk": "Slow Engagement",
+          "count": 38
+        }
+      ]
+    },
+    "Lockdown": {
+      "matches": 171,
+      "outlier_matches": 14,
+      "outlier_rate_pct": 8.2,
+      "storm_match_rate_pct": 9.9,
+      "median_metrics": {
+        "storm_death_pct": 0.0,
+        "dead_space_pct": 96.89,
+        "kill_cluster_pct": 40.0,
+        "loot_per_human": 12.0,
+        "first_engage_sec": 0.14
+      },
+      "top_risks": [
+        {
+          "risk": "Slow Engagement",
+          "count": 14
+        }
+      ]
+    },
+    "GrandRift": {
+      "matches": 59,
+      "outlier_matches": 6,
+      "outlier_rate_pct": 10.2,
+      "storm_match_rate_pct": 8.5,
+      "median_metrics": {
+        "storm_death_pct": 0.0,
+        "dead_space_pct": 95.41,
+        "kill_cluster_pct": 40.0,
+        "loot_per_human": 13.0,
+        "first_engage_sec": 0.15
+      },
+      "top_risks": [
+        {
+          "risk": "Slow Engagement",
+          "count": 6
+        }
+      ]
+    }
+  },
+  "top_outliers": [
+    {
+      "match_id": "9951374c-10d4-48a2-8227-a857958781e2",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.67,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.81 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.81,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.67,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "4eb7d365-3c0e-4c0d-a7f4-f8e869942b6d",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.66,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.8 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.8,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.66,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "db18377b-219e-4490-af87-76962f4a4d30",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "warning",
+      "score": 0.63,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.76 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.76,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.63,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ccfa9999-84b1-430a-b632-89ca7fb0df43",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.62,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.76 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.76,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.62,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "3b37fe56-c9a1-443d-9955-ae7c7916489d",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.6,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.74 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.74,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.6,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "8bc6af47-0e9f-4113-b49a-a8d46a65c5fb",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-14",
+      "severity": "warning",
+      "score": 0.6,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.73 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.73,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.6,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "df66fc66-873a-4e48-9990-8b5c8c2c5e94",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "warning",
+      "score": 0.59,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.72 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.72,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.59,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ae8e6439-f3e3-4223-a544-bed30ba8420a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "warning",
+      "score": 0.58,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.71 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.71,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.58,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b084348a-f739-4f1f-843c-d3bd5b1e6612",
+      "map_id": "GrandRift",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.58,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.73 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.73,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.58,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "c3a6fc96-69b6-41a9-ad26-1ac3297e5c65",
+      "map_id": "GrandRift",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.57,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.72 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.72,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.57,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "8c8aca2d-626d-4d99-ad69-8c02acee5256",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "warning",
+      "score": 0.56,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.69 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.69,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.56,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "41ca6faf-29a3-47b2-bf05-d7f9ee433013",
+      "map_id": "Lockdown",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.52,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.66 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.66,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.52,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b8bbc5b4-2daf-4747-9471-522564f83cc8",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.52,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.65 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.65,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.52,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b6d86df4-2c67-42bd-a6bb-6000eedc0aec",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.5,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.63 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.63,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.5,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ea5066c9-ddd7-41e1-b73a-6a32c07f06f1",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.49,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.62 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.62,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.49,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "57a2c738-32af-4f97-b767-f806bd1f6c8f",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.47,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.6 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.6,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.47,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "46a1ace9-e48e-4781-a645-1c5c3abd38d8",
+      "map_id": "GrandRift",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.46,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.61 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.61,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.46,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "1c48990a-5799-4d87-9a85-736088dafc02",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.45,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.59 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.59,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.45,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ac912f7d-54dc-481c-aee7-9ba348d5d686",
+      "map_id": "Lockdown",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.45,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.59 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.59,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.45,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "e12352da-d705-4e3d-8abe-422b515087ce",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.44,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.57 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.57,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.44,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "6bf911c3-8d92-48e0-a0e9-8059455dc55a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.43,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.56 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.56,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.43,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "bda1f035-a846-4988-b2c4-d8a016c1514a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "03a674ff-07c9-4b2f-bb54-5828760f5951",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "31124315-b055-4f30-b1d5-87f579044485",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "be6e57cc-1659-4775-bd95-10feacdabe4a",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.52 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.52,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "61a3159e-87d9-45ea-9a69-1c987011d2c1",
+      "map_id": "GrandRift",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "9b993025-6ebd-490d-9918-9673e3ceca27",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.51 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.51,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "bdd68bb5-50ea-485c-93cc-146cce17347d",
+      "map_id": "Lockdown",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.52 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.52,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "fab6a66b-a9a4-47e5-acfa-51266e093a81",
+      "map_id": "Lockdown",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.36,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.5 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.5,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.36,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b90ba39c-3978-4374-9e97-493198b0715c",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.35,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.48 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.48,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.35,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    }
+  ],
+  "outliers": [
+    {
+      "match_id": "9951374c-10d4-48a2-8227-a857958781e2",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.67,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.81 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.81,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.67,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "4eb7d365-3c0e-4c0d-a7f4-f8e869942b6d",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.66,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.8 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.8,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.66,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "db18377b-219e-4490-af87-76962f4a4d30",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "warning",
+      "score": 0.63,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.76 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.76,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.63,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ccfa9999-84b1-430a-b632-89ca7fb0df43",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.62,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.76 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.76,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.62,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "3b37fe56-c9a1-443d-9955-ae7c7916489d",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.6,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.74 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.74,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.6,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "8bc6af47-0e9f-4113-b49a-a8d46a65c5fb",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-14",
+      "severity": "warning",
+      "score": 0.6,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.73 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.73,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.6,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "df66fc66-873a-4e48-9990-8b5c8c2c5e94",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "warning",
+      "score": 0.59,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.72 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.72,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.59,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ae8e6439-f3e3-4223-a544-bed30ba8420a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "warning",
+      "score": 0.58,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.71 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.71,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.58,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b084348a-f739-4f1f-843c-d3bd5b1e6612",
+      "map_id": "GrandRift",
+      "date": "2026-02-13",
+      "severity": "warning",
+      "score": 0.58,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.73 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.73,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.58,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "c3a6fc96-69b6-41a9-ad26-1ac3297e5c65",
+      "map_id": "GrandRift",
+      "date": "2026-02-10",
+      "severity": "warning",
+      "score": 0.57,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.72 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.72,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.57,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "8c8aca2d-626d-4d99-ad69-8c02acee5256",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "warning",
+      "score": 0.56,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.69 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.69,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.56,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "41ca6faf-29a3-47b2-bf05-d7f9ee433013",
+      "map_id": "Lockdown",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.52,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.66 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.66,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.52,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b8bbc5b4-2daf-4747-9471-522564f83cc8",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.52,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.65 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.65,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.52,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b6d86df4-2c67-42bd-a6bb-6000eedc0aec",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.5,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.63 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.63,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.5,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ea5066c9-ddd7-41e1-b73a-6a32c07f06f1",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.49,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.62 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.62,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.49,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "57a2c738-32af-4f97-b767-f806bd1f6c8f",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.47,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.6 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.6,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.47,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "46a1ace9-e48e-4781-a645-1c5c3abd38d8",
+      "map_id": "GrandRift",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.46,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.61 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.61,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.46,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "1c48990a-5799-4d87-9a85-736088dafc02",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.45,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.59 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.59,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.45,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ac912f7d-54dc-481c-aee7-9ba348d5d686",
+      "map_id": "Lockdown",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.45,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.59 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.59,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.45,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "e12352da-d705-4e3d-8abe-422b515087ce",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.44,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.57 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.57,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.44,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "6bf911c3-8d92-48e0-a0e9-8059455dc55a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.43,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.56 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.56,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.43,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "bda1f035-a846-4988-b2c4-d8a016c1514a",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "03a674ff-07c9-4b2f-bb54-5828760f5951",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "31124315-b055-4f30-b1d5-87f579044485",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.4,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.4,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "be6e57cc-1659-4775-bd95-10feacdabe4a",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.52 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.52,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "61a3159e-87d9-45ea-9a69-1c987011d2c1",
+      "map_id": "GrandRift",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.53 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.53,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "9b993025-6ebd-490d-9918-9673e3ceca27",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.51 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.51,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "bdd68bb5-50ea-485c-93cc-146cce17347d",
+      "map_id": "Lockdown",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.38,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.52 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.52,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.38,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "fab6a66b-a9a4-47e5-acfa-51266e093a81",
+      "map_id": "Lockdown",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.36,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.5 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.5,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.36,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b90ba39c-3978-4374-9e97-493198b0715c",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.35,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.48 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.48,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.35,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "a68cf80a-cb02-4f58-b401-0d6fe34da650",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.35,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.48 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.48,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.35,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "a3eab037-95e3-4144-888d-44f20e7a0698",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.35,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.49 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.49,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.35,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "5a7a1035-f43d-44ed-afa5-95c39f3817bb",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.35,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.48 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.48,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.35,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "c8bbcc2b-46e0-4809-8107-3f15a6f74a28",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.33,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.46 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.46,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.33,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "9d3b73ad-eb54-4c15-a1ae-6b1a26d390ff",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.45 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.45,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "24b3709b-1230-4695-b915-d610e8086282",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.45 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.45,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "6afc519a-ce12-4ccb-8cb4-ad528c092e98",
+      "map_id": "Lockdown",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.46 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.46,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "259dd011-cd48-491e-9106-b55d97e7357c",
+      "map_id": "GrandRift",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.47 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.47,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "305bfe13-73cb-4e96-ae6f-1b990050181d",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.45 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.45,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "996cc94e-151a-41f2-a814-279367eb65fe",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.32,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.46 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.46,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.32,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "16afba4d-e8b9-4229-a4c6-f2d212574822",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.31,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.44 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.44,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.31,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "15afbb7a-0ea4-4204-b9b8-0c7d9d8679ad",
+      "map_id": "Lockdown",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.31,
+      "headline": "First engagement delay is unusually higher for Lockdown",
+      "takeaway": "Slow Engagement signal detected (0.45 vs median 0.14).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.45,
+          "median": 0.14,
+          "trend": "higher",
+          "deviation": 0.31,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "0de42105-9306-4673-967a-5458e7dcd0ac",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.3,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.43 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.43,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.3,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "b17a1ed9-ba80-47cb-80ed-89b2d0ca4f7d",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.29,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.42 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.42,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.29,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "3febfe9a-d86a-4a7b-8388-c0666b670ac7",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.29,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.42 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.42,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.29,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "abc9353f-ebef-4ad5-96b4-caba4b67d7fd",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.28,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.41 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.41,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.28,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ed2bb8d6-2308-42ba-8d73-c49c3002c7a9",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-13",
+      "severity": "info",
+      "score": 0.28,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.41 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.41,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.28,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "09cdb64b-3f9e-4dd8-95bc-c4459ac493a8",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.27,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.4 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.4,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.27,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "573343fd-a200-4d12-a0e6-c1517bc186a4",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.27,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.4 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.4,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.27,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "efcaf863-7678-4940-876d-4152b6269ecc",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.27,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.4 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.4,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.27,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "fa7738eb-0844-4b93-a84b-bd1cbe518a16",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.27,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.4 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.4,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.27,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "5a5cb1f3-fe9b-421b-ac7b-e30b8543e94e",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.26,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.39 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.39,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.26,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "314d12ee-7539-4b1c-a013-7cce73eaedec",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.26,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.39 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.39,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.26,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "1298e3e2-2776-4038-ba9b-72808b041561",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.25,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.38 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.38,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.25,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "99b47a87-7f23-4604-a014-521e3ad51d67",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.25,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.38 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.38,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.25,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "f28bacef-0604-4aa4-a8db-7883144bd1bb",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-11",
+      "severity": "info",
+      "score": 0.25,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.38 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.38,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.25,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "825bf604-7e10-4746-9c8b-7c2c8b756320",
+      "map_id": "GrandRift",
+      "date": "2026-02-12",
+      "severity": "info",
+      "score": 0.25,
+      "headline": "First engagement delay is unusually higher for GrandRift",
+      "takeaway": "Slow Engagement signal detected (0.4 vs median 0.15).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.4,
+          "median": 0.15,
+          "trend": "higher",
+          "deviation": 0.25,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    },
+    {
+      "match_id": "ee115079-fdf5-42d2-949a-06165420a4f5",
+      "map_id": "AmbroseValley",
+      "date": "2026-02-10",
+      "severity": "info",
+      "score": 0.24,
+      "headline": "First engagement delay is unusually higher for AmbroseValley",
+      "takeaway": "Slow Engagement signal detected (0.37 vs median 0.13).",
+      "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner.",
+      "signals": [
+        {
+          "metric": "first_engage_sec",
+          "label": "First engagement delay",
+          "value": 0.37,
+          "median": 0.13,
+          "trend": "higher",
+          "deviation": 0.24,
+          "risk": "Slow Engagement",
+          "improve": "Pull early objectives inward or add encounter hooks to trigger engagement sooner."
+        }
+      ]
+    }
+  ]
+}

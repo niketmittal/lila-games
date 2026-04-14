@@ -1,0 +1,24 @@
+# Raw parquet data (don't commit — only processed JSON goes to repo)
+player_data/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
