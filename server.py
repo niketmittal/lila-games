@@ -42,7 +42,6 @@ def load_json(path):
         return json.load(f)
 
 _index_cache = None
-_outlier_cache = None
 
 def get_index():
     global _index_cache
@@ -50,19 +49,9 @@ def get_index():
         _index_cache = load_json(os.path.join(DATA_DIR, "index.json"))
     return _index_cache
 
-def get_outliers():
-    global _outlier_cache
-    if _outlier_cache is None:
-        _outlier_cache = load_json(os.path.join(DATA_DIR, "outliers.json"))
-    return _outlier_cache
-
 @app.route("/api/index")
 def api_index():
     return jsonify(get_index())
-
-@app.route("/api/outliers")
-def api_outliers():
-    return jsonify(get_outliers())
 
 @app.route("/api/match/<match_id>")
 def api_match(match_id):

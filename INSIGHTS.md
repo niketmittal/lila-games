@@ -1,6 +1,6 @@
 # Dataset Insights for Level Design
 
-Scope: 796 matches from Feb 10-14, 2026, using derived metrics in data/outliers.json and aggregated match telemetry.
+Scope: 796 matches from Feb 10-14, 2026, using aggregated match telemetry.
 
 ## Insight 1 - Lockdown is under-utilized and under-rewarded in this sample
 
@@ -10,7 +10,6 @@ Lockdown combines the highest dead-space median with the lowest loot-per-human m
 ### Concrete evidence
 - Dead-space median: Lockdown 96.89%, AmbroseValley 96.75%, GrandRift 95.41%.
 - Loot per human median: Lockdown 12.0, GrandRift 13.0, AmbroseValley 15.0.
-- Outlier panel frequently highlights route concentration and low-coverage areas on Lockdown.
 
 ### Actionable takeaway
 Yes.
@@ -18,7 +17,6 @@ Yes.
 Metrics likely affected:
 - dead_space_pct (target down)
 - loot_per_human (target up)
-- outlier_rate_pct (target down)
 
 Action items:
 1. Add loot anchors and secondary objectives in low-traffic sectors.
@@ -37,7 +35,6 @@ Storm-affected matches cluster more on Lockdown and GrandRift than on AmbroseVal
 
 ### Concrete evidence
 - Storm-affected match rate: Lockdown 9.9%, GrandRift 8.5%, AmbroseValley 3.0%.
-- Dataset takeaways consistently flag storm pressure as a map-level differentiator.
 
 ### Actionable takeaway
 Yes.
@@ -57,28 +54,3 @@ Over-punitive storm flow can dominate outcomes and reduce meaningful combat and 
 
 ---
 
-## Insight 3 - Outliers are concentrated enough to enable targeted review instead of manual match-by-match analysis
-
-### What caught my eye
-Only a small slice of matches are flagged as outliers, and they cluster by day and map.
-
-### Concrete evidence
-- 58 outlier matches out of 796 total (7.3%).
-- Highest outlier concentration: GrandRift at 10.2%.
-- Day concentration: Feb 10 contributes 23 outlier matches (about 39.7% of all outliers).
-
-### Actionable takeaway
-Yes.
-
-Metrics likely affected:
-- review efficiency (time to identify problematic matches)
-- outlier_rate_pct by map/day (target down after map changes)
-- dominant risk frequency in top_risks (target diversification or reduction)
-
-Action items:
-1. Prioritize weekly review on top outlier cards instead of random match sampling.
-2. Slice outliers by map and day after each content patch to detect regressions quickly.
-3. Keep a short validation checklist per risk type (dead space, storm pressure, engagement delay).
-
-### Why a level designer should care
-This shifts workflow from exhaustive browsing to high-signal triage, which is faster and more actionable for iteration cycles.

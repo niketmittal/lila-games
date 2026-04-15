@@ -24,6 +24,9 @@ const EVENT_STYLE = {
   Loot:          { color: "#4ade80", label: "◆",  radius: 5 },
 };
 
+// Keep track color aligned with legend marker color for maximum readability.
+const TRACK_COLOR = "#00e5ff";
+
 const EVT_CHECKBOX_MAP = {
   Kill:          "evtKill",
   Killed:        "evtKilled",
@@ -43,44 +46,6 @@ const HEAT_SOURCES = {
   StormDeaths:  ["KilledByStorm"],
 };
 
-const PRESET_CONFIG = {
-  Balanced: {
-    note: "Balanced Read: paths and all core events with no heatmap bias.",
-    showHumans: true,
-    showBots: true,
-    events: ["Kill", "Killed", "BotKill", "BotKilled", "KilledByStorm", "Loot"],
-    heat: "off",
-  },
-  Combat: {
-    note: "Combat Balance: focus on engagement clusters and death overlap.",
-    showHumans: true,
-    showBots: true,
-    events: ["Kill", "Killed", "BotKill", "BotKilled"],
-    heat: "KillZones",
-  },
-  Storm: {
-    note: "Storm Pressure: isolate storm outcomes to spot forced pathing issues.",
-    showHumans: true,
-    showBots: false,
-    events: ["KilledByStorm", "Killed", "Loot"],
-    heat: "StormDeaths",
-  },
-  Loot: {
-    note: "Loot Flow: show movement and pickups to validate loot route coverage.",
-    showHumans: true,
-    showBots: true,
-    events: ["Loot", "Kill", "BotKill"],
-    heat: "LootZones",
-  },
-  DeadSpace: {
-    note: "Dead Space: emphasize traffic heat to reveal ignored map regions.",
-    showHumans: true,
-    showBots: false,
-    events: [],
-    heat: "Traffic",
-  },
-};
-
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -97,13 +62,12 @@ const state = {
   heatmapData:    null,
   heatmapCacheKey: null,
   heatmapMessage: "",
-  selectedPreset: "Balanced",
   index:          null,
-  outlierData:    null,
   playback: {
     minTs: 0,
     maxTs: 0,
     currentTs: 0,
+    tsPerSecond: 1,
     isPlaying: false,
     speed: 1,
     rafId: null,
@@ -130,15 +94,12 @@ const showHumans = document.getElementById("showHumans");
 const showBots   = document.getElementById("showBots");
 const heatBtns   = document.querySelectorAll(".heat-btn");
 const heatmapStatus = document.getElementById("heatmapStatus");
-const presetBtns = document.querySelectorAll(".preset-btn");
-const presetNote = document.getElementById("presetNote");
 const insightHighlights = document.getElementById("insightHighlights");
-const datasetSummary = document.getElementById("datasetSummary");
-const outlierList = document.getElementById("outlierList");
 
 const prevMatchBtn = document.getElementById("prevMatch");
 const nextMatchBtn = document.getElementById("nextMatch");
 const matchCounter = document.getElementById("matchCounter");
+const trackingMode = document.getElementById("trackingMode");
 
 const playToggle     = document.getElementById("playToggle");
 const timelineReset  = document.getElementById("timelineReset");
@@ -189,105 +150,47 @@ function setActiveMapTab(mapId) {
   });
 }
 
-function setEventFilters(enabledTypes) {
-  const enabled = new Set(enabledTypes);
-  for (const [evtType, checkboxId] of Object.entries(EVT_CHECKBOX_MAP)) {
-    const cb = document.getElementById(checkboxId);
-    if (!cb) continue;
-    cb.checked = enabled.has(evtType);
+function formatDuration(seconds) {
+  const totalSec = Math.max(0, Math.floor(seconds));
+  const hh = Math.floor(totalSec / 3600);
+  const mm = Math.floor((totalSec % 3600) / 60);
+  const ss = totalSec % 60;
+  if (hh > 0) {
+    return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
   }
+  return `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 }
 
-async function applyPreset(presetName) {
-  const cfg = PRESET_CONFIG[presetName];
-  if (!cfg) return;
-
-  state.selectedPreset = presetName;
-  presetBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.preset === presetName));
-  presetNote.textContent = cfg.note;
-
-  showHumans.checked = cfg.showHumans;
-  showBots.checked = cfg.showBots;
-  setEventFilters(cfg.events);
-
-  state.heatmapType = cfg.heat;
-  setActiveHeatButton(cfg.heat);
-
-  if (cfg.heat === "off") {
-    state.heatmapData = null;
-    state.heatmapCacheKey = null;
-    state.heatmapMessage = "";
-    heatmapStatus.textContent = "";
-    heatCanvas = null;
-    render();
-    return;
-  }
-
-  await loadHeatmap(state.selectedMap, cfg.heat);
-  render();
+function detectTsPerSecond(minTs, maxTs) {
+  const reference = Math.max(Math.abs(minTs), Math.abs(maxTs));
+  return reference >= 100000000000 ? 1000 : 1;
 }
 
-function renderDatasetInsights() {
-  if (!state.outlierData) {
-    datasetSummary.innerHTML = `<div class="dataset-summary-item">Dataset insights unavailable. Re-run processing to generate outlier signals.</div>`;
-    outlierList.innerHTML = `<div class="outlier-empty">No outlier dataset loaded.</div>`;
-    return;
+function getInterpolatedTrail(points, cursorTs) {
+  if (!points || points.length === 0) return null;
+  if (cursorTs < points[0].ts) return null;
+
+  const last = points[points.length - 1];
+  if (cursorTs >= last.ts) {
+    return { trail: points, head: last };
   }
 
-  const quick = Array.isArray(state.outlierData.quick_takeaways)
-    ? state.outlierData.quick_takeaways.slice(0, 4)
-    : [];
+  let idx = 1;
+  while (idx < points.length && points[idx].ts <= cursorTs) idx += 1;
 
-  datasetSummary.innerHTML = quick.map(item => `<div class="dataset-summary-item">${item}</div>`).join("");
+  const prev = points[idx - 1];
+  const next = points[idx];
+  const span = next.ts - prev.ts;
+  const t = span > 0 ? (cursorTs - prev.ts) / span : 0;
+  const head = {
+    px: lerp(prev.px, next.px, t),
+    py: lerp(prev.py, next.py, t),
+    ts: cursorTs,
+  };
 
-  const top = Array.isArray(state.outlierData.top_outliers)
-    ? state.outlierData.top_outliers.slice(0, 6)
-    : [];
-
-  if (top.length === 0) {
-    outlierList.innerHTML = `<div class="outlier-empty">No outlier matches were flagged.</div>`;
-    return;
-  }
-
-  outlierList.innerHTML = top.map(o => `
-    <button class="outlier-card ${o.severity || "info"}" data-map="${o.map_id}" data-date="${o.date}" data-match="${o.match_id}">
-      <div class="outlier-head">
-        <span class="outlier-map">${o.map_id}</span>
-        <span class="outlier-score">${o.severity || "info"} · score ${Number(o.score || 0).toFixed(2)}</span>
-      </div>
-      <div class="outlier-note">${o.headline || "Outlier signal detected"}</div>
-    </button>
-  `).join("");
-
-  outlierList.querySelectorAll(".outlier-card").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const mapId = btn.dataset.map;
-      const date = btn.dataset.date;
-      const matchId = btn.dataset.match;
-
-      state.selectedMap = mapId;
-      state.selectedDate = date;
-      setActiveMapTab(mapId);
-      state.heatmapCacheKey = null;
-      heatCanvas = null;
-
-      dateSelect.value = "";
-      populateDates();
-      dateSelect.value = date;
-      populateMatches();
-
-      matchSelect.value = matchId;
-      loadMinimapImage();
-      await loadMatch(matchId);
-    });
-  });
-}
-
-function formatDuration(ms) {
-  const totalSec = Math.max(0, Math.floor(ms / 1000));
-  const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
-  const ss = String(totalSec % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
+  const trail = points.slice(0, idx);
+  trail.push(head);
+  return { trail, head };
 }
 
 function stopPlayback() {
@@ -309,6 +212,43 @@ function setTimelineEnabled(enabled) {
   speedSelect.disabled = !enabled;
 }
 
+function updateTrackingModeBadge() {
+  if (!trackingMode) return;
+  const pb = state.playback;
+  const hasRange = Boolean(state.matchData) && pb.maxTs > pb.minTs;
+
+  if (!hasRange) {
+    trackingMode.textContent = "TRACK";
+    trackingMode.className = "tracking-mode";
+    return;
+  }
+
+  const epsilon = (pb.tsPerSecond || 1) * 0.001;
+  const atStart = Math.abs(pb.currentTs - pb.minTs) <= epsilon;
+  const atEnd = Math.abs(pb.currentTs - pb.maxTs) <= epsilon;
+
+  if (pb.isPlaying) {
+    trackingMode.textContent = "TRACKING";
+    trackingMode.className = "tracking-mode live";
+    return;
+  }
+
+  if (atStart) {
+    trackingMode.textContent = "FULL TRACK PREVIEW";
+    trackingMode.className = "tracking-mode full";
+    return;
+  }
+
+  if (atEnd) {
+    trackingMode.textContent = "FULL TRACK END";
+    trackingMode.className = "tracking-mode full";
+    return;
+  }
+
+  trackingMode.textContent = "TRACK PAUSED";
+  trackingMode.className = "tracking-mode pause";
+}
+
 function updateTimelineUI() {
   const pb = state.playback;
   const hasRange = pb.maxTs > pb.minTs;
@@ -319,16 +259,20 @@ function updateTimelineUI() {
     timelineEnd.textContent = "00:00";
     timelineSlider.value = "0";
     setTimelineEnabled(false);
+    updateTrackingModeBadge();
     return;
   }
 
   const span = pb.maxTs - pb.minTs;
   const relCurrent = Math.max(0, pb.currentTs - pb.minTs);
+  const spanSec = span / pb.tsPerSecond;
+  const relCurrentSec = relCurrent / pb.tsPerSecond;
   timelineStart.textContent = "00:00";
-  timelineCurrent.textContent = formatDuration(relCurrent);
-  timelineEnd.textContent = formatDuration(span);
+  timelineCurrent.textContent = formatDuration(relCurrentSec);
+  timelineEnd.textContent = formatDuration(spanSec);
   timelineSlider.value = String(Math.round((relCurrent / span) * 1000));
   setTimelineEnabled(true);
+  updateTrackingModeBadge();
 }
 
 function initializeTimeline(matchData) {
@@ -360,10 +304,12 @@ function initializeTimeline(matchData) {
     state.playback.minTs = 0;
     state.playback.maxTs = 0;
     state.playback.currentTs = 0;
+    state.playback.tsPerSecond = 1;
   } else {
     state.playback.minTs = minTs;
     state.playback.maxTs = maxTs;
     state.playback.currentTs = minTs;
+    state.playback.tsPerSecond = detectTsPerSecond(minTs, maxTs);
   }
 
   state.playback.speed = Number(speedSelect.value || 1);
@@ -377,7 +323,8 @@ function playbackStep(frameTime) {
   if (!pb.lastFrameAt) pb.lastFrameAt = frameTime;
   const deltaMs = frameTime - pb.lastFrameAt;
   pb.lastFrameAt = frameTime;
-  pb.currentTs += deltaMs * pb.speed;
+  const deltaTs = (deltaMs / 1000) * pb.speed * pb.tsPerSecond;
+  pb.currentTs += deltaTs;
 
   if (pb.currentTs >= pb.maxTs) {
     pb.currentTs = pb.maxTs;
@@ -414,20 +361,11 @@ function togglePlayback() {
 async function init() {
   showLoading("Loading data index…");
   initializeTimeline(null);
-  if (PRESET_CONFIG[state.selectedPreset]) {
-    presetNote.textContent = PRESET_CONFIG[state.selectedPreset].note;
-  }
   try {
-    const [indexData, outlierData] = await Promise.all([
-      fetchJSON("/api/index"),
-      fetchJSON("/api/outliers").catch(() => null),
-    ]);
-
+    const indexData = await fetchJSON("/api/index");
     state.index = indexData;
-    state.outlierData = outlierData;
 
     updateHeaderStats();
-    renderDatasetInsights();
     populateDates();
     populateMatches();
     loadMinimapImage();
@@ -698,6 +636,10 @@ function render() {
   const showB = showBots.checked;
   const hasTimeline = state.playback.maxTs > state.playback.minTs;
   const cursorTs = hasTimeline ? state.playback.currentTs : Number.POSITIVE_INFINITY;
+  const epsilon = (state.playback.tsPerSecond || 1) * 0.001;
+  const atStart = hasTimeline && Math.abs(state.playback.currentTs - state.playback.minTs) <= epsilon;
+  const atEnd = hasTimeline && Math.abs(state.playback.currentTs - state.playback.maxTs) <= epsilon;
+  const showFullTrack = hasTimeline && ((!state.playback.isPlaying && atStart) || atEnd);
   const enabledEvts = new Set(
     Object.entries(EVT_CHECKBOX_MAP)
       .filter(([, id]) => document.getElementById(id)?.checked)
@@ -715,37 +657,51 @@ function render() {
     ctx.globalAlpha = 1.0;
   }
 
-  // Player journeys — show path up to the active playback time.
+  // Player journeys — bold single-color track for clear readability.
   for (const player of state.matchData.players) {
     if (player.is_bot && !showB) continue;
     if (!player.is_bot && !showH) continue;
 
-    const color = player.color;
-    const pos = player.positions.filter(p => p.ts <= cursorTs);
+    let movement;
+    if (showFullTrack) {
+      if (!player.positions || player.positions.length === 0) continue;
+      const fullTrackHead = atEnd
+        ? player.positions[player.positions.length - 1]
+        : player.positions[0];
+      movement = {
+        trail: player.positions,
+        head: fullTrackHead,
+      };
+    } else {
+      movement = getInterpolatedTrail(player.positions, cursorTs);
+    }
+    if (!movement) continue;
 
+    const pos = movement.trail;
+    const head = movement.head;
     if (pos.length > 1) {
       ctx.beginPath();
       ctx.moveTo(pos[0].px, pos[0].py);
       for (let i = 1; i < pos.length; i++) ctx.lineTo(pos[i].px, pos[i].py);
-      ctx.strokeStyle = color;
-      ctx.lineWidth   = player.is_bot ? 1.2 : 1.8;
-      ctx.globalAlpha = player.is_bot ? 0.4 : 0.65;
-      ctx.setLineDash(player.is_bot ? [4, 5] : []);
+      ctx.strokeStyle = TRACK_COLOR;
+      ctx.lineWidth = player.is_bot ? 3.0 : 3.8;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.setLineDash(player.is_bot ? [10, 7] : []);
       ctx.stroke();
-      ctx.setLineDash([]); ctx.globalAlpha = 1.0;
+      ctx.setLineDash([]);
 
       // End dot
-      const last = pos[pos.length - 1];
       ctx.beginPath();
-      ctx.arc(last.px, last.py, player.is_bot ? 3 : 5, 0, Math.PI * 2);
-      ctx.fillStyle = color; ctx.fill();
+      ctx.arc(head.px, head.py, player.is_bot ? 3.8 : 5.4, 0, Math.PI * 2);
+      ctx.fillStyle = TRACK_COLOR;
+      ctx.fill();
 
-      if (!player.is_bot) {
-        ctx.beginPath();
-        ctx.arc(last.px, last.py, 8, 0, Math.PI * 2);
-        ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.35;
-        ctx.stroke(); ctx.globalAlpha = 1.0;
-      }
+      ctx.beginPath();
+      ctx.arc(head.px, head.py, player.is_bot ? 6.6 : 9.5, 0, Math.PI * 2);
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
 
     // Events
@@ -864,22 +820,12 @@ async function renderAnalytics() {
   const topTraffic = [...zoneStats].sort((a, b) => b.traffic - a.traffic)[0];
   const topCombat  = [...zoneStats].sort((a, b) => b.kills - a.kills)[0];
   const topLoot    = [...zoneStats].sort((a, b) => b.loot - a.loot)[0];
-  const currentOutlier = state.outlierData?.outliers?.find(o => o.match_id === d.match_id) || null;
-  const outlierChipClass = !currentOutlier
-    ? "ok"
-    : (currentOutlier.severity === "critical" ? "critical" : (currentOutlier.severity === "warning" ? "warn" : "ok"));
-  const outlierInsightClass = !currentOutlier
-    ? "ok"
-    : (currentOutlier.severity === "critical" ? "bug" : (currentOutlier.severity === "warning" ? "warn" : "info"));
 
   const chips = [];
   chips.push(`<span class="highlight-chip ${deadSpacePct >= 45 ? "critical" : deadSpacePct >= 28 ? "warn" : "ok"}"><strong>Dead Space</strong> ${deadSpacePct}%</span>`);
   chips.push(`<span class="highlight-chip ${stormPct >= 35 ? "critical" : stormPct >= 20 ? "warn" : "ok"}"><strong>Storm Pressure</strong> ${stormPct}% deaths</span>`);
   chips.push(`<span class="highlight-chip ${engagementDensity >= 45 ? "warn" : "ok"}"><strong>Kill Cluster</strong> ${engagementDensity}% in hottest cell</span>`);
   chips.push(`<span class="highlight-chip ok"><strong>Top Combat Zone</strong> ${topCombat.label}</span>`);
-  if (currentOutlier) {
-    chips.push(`<span class="highlight-chip ${outlierChipClass}"><strong>Outlier</strong> ${currentOutlier.headline}</span>`);
-  }
   insightHighlights.innerHTML = chips.join("");
 
   panel.innerHTML = `
@@ -893,15 +839,6 @@ async function renderAnalytics() {
         <div class="stat-card"><div class="stat-val">${avgLoot}</div><div class="stat-key">Loot / Human</div></div>
         <div class="stat-card"><div class="stat-val">${engagementDensity}%</div><div class="stat-key">Kill Cluster</div></div>
       </div>
-    </div>
-
-    <div class="analytics-section">
-      <div class="analytics-section-title">One-Minute Takeaway</div>
-      ${currentOutlier
-        ? `<div class="insight-card ${outlierInsightClass}"><div class="insight-icon">🚩</div><div><strong>${currentOutlier.headline}</strong><div class="insight-sub">${currentOutlier.improve}</div></div></div>`
-        : `<div class="insight-card ok"><div class="insight-icon">✅</div><div><strong>No major outlier flag</strong><div class="insight-sub">This match sits close to map medians across key signals.</div></div></div>`}
-      ${hotFightZone ? `<div class="insight-card info"><div class="insight-icon">📌</div><div><strong>Combat Focus</strong><div class="insight-sub">${hotFightZone.count} kills around ${hotFightZone.x}%x, ${hotFightZone.y}%y.</div></div></div>` : ""}
-      ${oob > 0 ? `<div class="insight-card bug"><div class="insight-icon">🚨</div><div><strong>Data quality check</strong><div class="insight-sub">${oob} points are outside minimap bounds.</div></div></div>` : ""}
     </div>
 
     <div class="analytics-section">
@@ -1005,10 +942,6 @@ document.querySelectorAll("#eventFilters input").forEach(cb => cb.addEventListen
 
 heatBtns.forEach(btn => {
   btn.addEventListener("click", async () => {
-    state.selectedPreset = "";
-    presetBtns.forEach(p => p.classList.remove("active"));
-    presetNote.textContent = "Custom view: manual layer mix for targeted inspection.";
-
     heatBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     const type = btn.dataset.heat;
@@ -1021,12 +954,6 @@ heatBtns.forEach(btn => {
       render();
     }
     else { await loadHeatmap(state.selectedMap, type); render(); }
-  });
-});
-
-presetBtns.forEach(btn => {
-  btn.addEventListener("click", async () => {
-    await applyPreset(btn.dataset.preset);
   });
 });
 

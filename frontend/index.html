@@ -60,13 +60,6 @@
           <option value="">— select a match —</option>
         </select>
         <div class="match-meta" id="matchMeta"></div>
-
-        <!-- Prev / Next navigation -->
-        <div class="match-nav">
-          <button class="nav-btn" id="prevMatch" disabled title="Previous match">‹ Prev</button>
-          <span class="match-counter" id="matchCounter">— / —</span>
-          <button class="nav-btn" id="nextMatch" disabled title="Next match">Next ›</button>
-        </div>
       </section>
 
       <!-- Player Types -->
@@ -101,19 +94,6 @@
         </div>
       </section>
 
-      <!-- Design Presets -->
-      <section class="panel">
-        <div class="panel-label">DESIGN QUESTIONS</div>
-        <div class="preset-btns" id="presetBtns">
-          <button class="preset-btn active" data-preset="Balanced">Balanced Read</button>
-          <button class="preset-btn" data-preset="Combat">Combat Balance</button>
-          <button class="preset-btn" data-preset="Storm">Storm Pressure</button>
-          <button class="preset-btn" data-preset="Loot">Loot Flow</button>
-          <button class="preset-btn" data-preset="DeadSpace">Dead Space</button>
-        </div>
-        <div class="preset-note" id="presetNote">Balanced Read: paths and all core events with no heatmap bias.</div>
-      </section>
-
       <!-- Heatmap -->
       <section class="panel">
         <div class="panel-label">HEATMAP OVERLAY</div>
@@ -126,12 +106,6 @@
           <button class="heat-btn" data-heat="StormDeaths">Storm Deaths</button>
         </div>
         <div class="heatmap-status" id="heatmapStatus"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-label">DATASET TAKEAWAYS</div>
-        <div class="dataset-summary" id="datasetSummary">Loading dataset-level insights…</div>
-        <div class="outlier-list" id="outlierList"></div>
       </section>
 
     </aside>
@@ -171,8 +145,14 @@
       </div>
 
       <div class="timeline-bar">
-        <button class="play-btn" id="playToggle" title="Play / Pause" disabled>▶</button>
-        <button class="reset-btn" id="timelineReset" title="Reset Timeline" disabled>↺</button>
+        <div class="timeline-controls">
+          <button class="timeline-btn" id="prevMatch" disabled title="Previous match">‹</button>
+          <button class="play-btn" id="playToggle" title="Play / Pause" disabled>▶</button>
+          <button class="timeline-btn" id="nextMatch" disabled title="Next match">›</button>
+          <button class="reset-btn" id="timelineReset" title="Reset Timeline" disabled>↺</button>
+          <span class="timeline-counter" id="matchCounter">— / —</span>
+          <span class="tracking-mode" id="trackingMode">TRACK</span>
+        </div>
         <div class="timeline-wrap">
           <input class="timeline-slider" id="timelineSlider" type="range" min="0" max="1000" step="1" value="0" disabled />
           <div class="timeline-labels">
@@ -189,6 +169,8 @@
             <option value="1" selected>1x</option>
             <option value="2">2x</option>
             <option value="4">4x</option>
+            <option value="8">8x</option>
+            <option value="16">16x</option>
           </select>
         </div>
       </div>

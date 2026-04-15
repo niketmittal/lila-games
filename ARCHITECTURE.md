@@ -20,13 +20,11 @@
 	- [data/index.json](data/index.json)
 	- [data/matches](data/matches)
 	- [data/heatmaps](data/heatmaps)
-	- [data/outliers.json](data/outliers.json)
 4. Serve data with [server.py](server.py):
 	- `/api/index`
 	- `/api/match/<id>`
 	- `/api/heatmap/<map>/<event>`
-	- `/api/outliers`
-5. Frontend [frontend/app.js](frontend/app.js) renders minimap, timeline, heatmaps, and concise outlier insights.
+5. Frontend [frontend/app.js](frontend/app.js) renders minimap, timeline, and heatmaps.
 
 ## Coordinate mapping (important part)
 
@@ -55,7 +53,6 @@ Implementation is in [process_data.py](process_data.py).
 1. Timestamps are treated as match-time ordering values.
 2. Elevation `y` is ignored for 2D minimap rendering.
 3. Missing heatmap files for sparse event/map combos are treated as no-data, not hard errors.
-4. Outlier scores are heuristic (IQR based), intended to prioritize review, not to be absolute truth.
 
 ## Major tradeoffs
 
@@ -63,7 +60,6 @@ Implementation is in [process_data.py](process_data.py).
 |---|---|---|
 | Query model | Precompute JSON files | Faster UI and simpler backend, but data refresh needs a re-run. |
 | Rendering | Canvas 2D | Better performance for many points, less built-in DOM interactivity. |
-| Analytics model | Rule and IQR based outliers | Explainable and simple, but less expressive than ML-based anomaly detection. |
 
 ## How easy is it to add more data and re-run?
 
@@ -72,7 +68,7 @@ Very easy. Current pipeline is batch-based and deterministic.
 1. Add new parquet files into [player_data](player_data) (new day folder or existing day folder).
 2. Re-run:
 	- `python process_data.py`
-3. This rebuilds [data/index.json](data/index.json), [data/matches](data/matches), [data/heatmaps](data/heatmaps), and [data/outliers.json](data/outliers.json).
+3. This rebuilds [data/index.json](data/index.json), [data/matches](data/matches), and [data/heatmaps](data/heatmaps).
 4. Restart server (`python server.py`) so the latest files are served.
 
 No schema migration or database step is required.
@@ -81,4 +77,3 @@ No schema migration or database step is required.
 
 1. Lockdown has the highest dead-space median and the lowest loot yield per human in this sample.
 2. Lockdown has the highest storm-affected match rate, with GrandRift next.
-3. Only a small share of matches are outliers, so targeted review is faster than opening matches one by one.
