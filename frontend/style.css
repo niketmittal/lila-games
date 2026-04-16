@@ -677,6 +677,192 @@ html, body {
 
 .speed-select option { background: var(--panel); }
 
+/* ── RANGE COMPARATOR (TOOL 02) ───────────────────────────────── */
+.range-tool-bar {
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.range-tool-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.range-tool-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.range-tool-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.range-filter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.range-group {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.range-group-title {
+  grid-column: 1 / -1;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.range-field span {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.range-field .styled-select {
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.range-compare-btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: rgba(0,229,255,0.12);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.16s;
+}
+
+.range-compare-btn:hover:not(:disabled) {
+  background: rgba(0,229,255,0.18);
+  color: #8bf5ff;
+}
+
+.range-compare-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.range-status {
+  min-height: 16px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.range-status.error {
+  color: #fda4af;
+}
+
+.range-status.success {
+  color: #86efac;
+}
+
+.range-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.range-metric-card {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.range-metric-key {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.range-metric-values {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.range-metric-before,
+.range-metric-after {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.range-metric-before {
+  color: var(--text-dim);
+}
+
+.range-metric-after {
+  color: var(--text);
+}
+
+.range-metric-delta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  align-self: flex-start;
+  padding: 3px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  background: rgba(22, 27, 39, 0.9);
+}
+
+.range-metric-delta.good {
+  color: #86efac;
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(22, 163, 74, 0.16);
+}
+
+.range-metric-delta.bad {
+  color: #fda4af;
+  border-color: rgba(244, 63, 94, 0.45);
+  background: rgba(225, 29, 72, 0.16);
+}
+
+.range-metric-delta.flat {
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(30, 64, 175, 0.16);
+}
+
 /* ── LEGEND ─────────────────────────────────────────────────────── */
 .legend {
   position: absolute;
@@ -852,6 +1038,19 @@ select::-webkit-scrollbar-thumb { background: var(--border2); }
     padding: 8px 10px;
     flex-wrap: wrap;
     row-gap: 8px;
+  }
+
+  .range-filter-grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .range-group {
+    grid-template-columns: 1fr;
+  }
+
+  .range-metrics-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .legend {

@@ -2,58 +2,6 @@
 
 Scope: 796 matches from Feb 10-14, 2026, using aggregated match telemetry.
 
-## Insight 1 - Lockdown is under-utilized and under-rewarded in this sample
-
-### What caught my eye
-Lockdown combines the highest dead-space median with the lowest loot-per-human median.
-
-### Concrete evidence
-- Dead-space median: Lockdown 96.89%, AmbroseValley 96.75%, GrandRift 95.41%.
-- Loot per human median: Lockdown 12.0, GrandRift 13.0, AmbroseValley 15.0.
-
-### Actionable takeaway
-Yes.
-
-Metrics likely affected:
-- dead_space_pct (target down)
-- loot_per_human (target up)
-
-Action items:
-1. Add loot anchors and secondary objectives in low-traffic sectors.
-2. Improve route readability to move players into currently ignored space.
-3. Validate after change with dead-space heat and zone-rollup movement share.
-
-### Why a level designer should care
-This points to inefficient map usage: production space is built but rarely visited, while rewards are concentrated elsewhere.
-
----
-
-## Insight 2 - Storm pressure is map-dependent and highest on Lockdown in this dataset
-
-### What caught my eye
-Storm-affected matches cluster more on Lockdown and GrandRift than on AmbroseValley.
-
-### Concrete evidence
-- Storm-affected match rate: Lockdown 9.9%, GrandRift 8.5%, AmbroseValley 3.0%.
-
-### Actionable takeaway
-Yes.
-
-Metrics likely affected:
-- storm_match_rate_pct (target down where excessive)
-- storm_death_pct (target down)
-- extraction success proxy via lower storm-only death concentration
-
-Action items:
-1. Re-check storm timing and directional sweep against extraction path lengths.
-2. Add clearer safe-route cues and recovery corridors where storm traps occur.
-3. Track storm-match-rate delta before/after tuning by map.
-
-### Why a level designer should care
-Over-punitive storm flow can dominate outcomes and reduce meaningful combat and navigation decisions.
-
----
-
 ## Feature Update - Multi-Heatmap Overlap Explorer (Designer Tool 01)
 
 ### What this feature does
@@ -88,5 +36,53 @@ Practical level-design value:
 2. Inspect overlap and isolated markers on-map.
 3. Apply local map changes (loot anchor, route branching, encounter pressure).
 4. Re-run and compare marker density/placement until hotspots align with intended pacing.
+
+---
+
+## Feature Update - Date Range Metrics Comparator (Designer Tool 02)
+
+### What this feature does
+Tool 02 lets designers compare two date ranges on the same map:
+- Before Change range (baseline)
+- After Change range (post-update)
+
+It aggregates map-level metrics for each range and shows the delta so designers can quickly verify whether a map edit actually improved outcomes.
+
+### How a level designer uses it
+UI location:
+- Tool 02 is shown below the play/timeline controls in the main panel.
+
+Steps:
+1. Select a map.
+2. In Tool 02, choose Before Change start/end dates.
+3. Choose After Change start/end dates.
+4. Click Compare Ranges.
+5. Review per-metric before/after values and delta badges.
+
+### How to interpret the metrics
+Primary effectiveness metrics:
+1. Map Utilization (%): higher is better.
+	- Indicates how much of the map is being actively used.
+2. Dead Space (%): lower is better.
+	- Indicates how much of the map remains unvisited.
+3. Loot Space (%): higher is usually better (up to balance limits).
+	- Indicates how widely loot interaction is distributed across the map.
+
+Supporting metrics:
+1. Loot per Human: higher generally indicates stronger reward density per run.
+2. Kills per Match: context metric for engagement intensity (not always strictly "higher is better").
+
+### Example validation questions this answers
+After a layout or loot pass, designers can verify:
+1. Did dead space reduce after the change?
+2. Did map utilization increase in ignored sectors?
+3. Did loot space improve without over-concentrating combat?
+4. Did engagement move toward intended pacing?
+
+### Why this matters in production
+Tool 02 converts subjective map-feel judgments into measurable before/after evidence. That helps teams:
+1. confirm whether a change worked,
+2. avoid repeating ineffective iterations,
+3. prioritize the next tuning pass based on real movement and reward outcomes.
 
 

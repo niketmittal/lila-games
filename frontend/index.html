@@ -181,6 +181,44 @@
         </div>
       </div>
 
+      <section class="range-tool-bar" id="rangeToolBar">
+        <div class="range-tool-head">
+          <div class="range-tool-title">TOOL 02 - DATE RANGE METRICS COMPARATOR</div>
+          <div class="range-tool-sub">Measure how map effectiveness changed after a design update.</div>
+        </div>
+
+        <div class="range-filter-grid">
+          <div class="range-group">
+            <div class="range-group-title">Before Change</div>
+            <label class="range-field">
+              <span>Start</span>
+              <select id="rangeBeforeStart" class="styled-select"></select>
+            </label>
+            <label class="range-field">
+              <span>End</span>
+              <select id="rangeBeforeEnd" class="styled-select"></select>
+            </label>
+          </div>
+
+          <div class="range-group">
+            <div class="range-group-title">After Change</div>
+            <label class="range-field">
+              <span>Start</span>
+              <select id="rangeAfterStart" class="styled-select"></select>
+            </label>
+            <label class="range-field">
+              <span>End</span>
+              <select id="rangeAfterEnd" class="styled-select"></select>
+            </label>
+          </div>
+
+          <button class="range-compare-btn" id="rangeCompareBtn" type="button">Compare Ranges</button>
+        </div>
+
+        <div class="range-status" id="rangeStatus">Pick date ranges and compare to see metric movement.</div>
+        <div class="range-metrics-grid" id="rangeMetricsGrid"></div>
+      </section>
+
     </main>
 
   </div>

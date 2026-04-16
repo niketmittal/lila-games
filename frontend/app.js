@@ -65,6 +65,39 @@ const HEAT_COLOR_VAR = {
 
 const HEAT_BANDS = 5;
 
+const RANGE_METRIC_CONFIG = [
+  {
+    key: "map_work_pct",
+    label: "Map Utilization",
+    unit: "%",
+    better: "up",
+  },
+  {
+    key: "dead_space_pct",
+    label: "Dead Space",
+    unit: "%",
+    better: "down",
+  },
+  {
+    key: "loot_space_pct",
+    label: "Loot Space",
+    unit: "%",
+    better: "up",
+  },
+  {
+    key: "loot_per_human",
+    label: "Loot / Human",
+    unit: "",
+    better: "up",
+  },
+  {
+    key: "kills_per_match",
+    label: "Kills / Match",
+    unit: "",
+    better: "up",
+  },
+];
+
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -85,6 +118,12 @@ const state = {
   overlapMarkers: [],
   activeHeatRequestId: 0,
   heatmapMessage: "",
+  rangeSelection: {
+    beforeStart: "",
+    beforeEnd: "",
+    afterStart: "",
+    afterEnd: "",
+  },
   index:          null,
   playback: {
     minTs: 0,
@@ -133,6 +172,14 @@ const speedSelect    = document.getElementById("speedSelect");
 const timelineStart  = document.getElementById("timelineStart");
 const timelineCurrent= document.getElementById("timelineCurrent");
 const timelineEnd    = document.getElementById("timelineEnd");
+
+const rangeBeforeStart = document.getElementById("rangeBeforeStart");
+const rangeBeforeEnd = document.getElementById("rangeBeforeEnd");
+const rangeAfterStart = document.getElementById("rangeAfterStart");
+const rangeAfterEnd = document.getElementById("rangeAfterEnd");
+const rangeCompareBtn = document.getElementById("rangeCompareBtn");
+const rangeStatus = document.getElementById("rangeStatus");
+const rangeMetricsGrid = document.getElementById("rangeMetricsGrid");
 
 const statMatches  = document.getElementById("statMatches");
 const statPlayers  = document.getElementById("statPlayers");
@@ -665,6 +712,7 @@ async function init() {
     updateHeaderStats();
     populateDates();
     populateMatches();
+    populateRangeFilters();
     loadMinimapImage();
     updateHeatSelectionUI();
     heatmapStatus.textContent = "Select one or more heatmaps to overlay.";
@@ -681,6 +729,165 @@ function updateHeaderStats() {
   let total = 0;
   for (const map of Object.values(idx)) for (const ids of Object.values(map)) total += ids.length;
   statMatches.textContent = `${total} matches`;
+}
+
+function setRangeStatus(msg, tone = "default") {
+  if (!rangeStatus) return;
+  rangeStatus.textContent = msg;
+  rangeStatus.classList.remove("error", "success");
+  if (tone === "error") rangeStatus.classList.add("error");
+  if (tone === "success") rangeStatus.classList.add("success");
+}
+
+function getMapDates(mapId) {
+  return Object.keys(state.index?.[mapId] || {}).sort();
+}
+
+function fillRangeSelect(selectEl, dates, selectedValue = "") {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  for (const d of dates) {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    selectEl.appendChild(opt);
+  }
+  if (dates.length === 0) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "No dates";
+    selectEl.appendChild(opt);
+    selectEl.disabled = true;
+    return;
+  }
+  selectEl.disabled = false;
+  selectEl.value = dates.includes(selectedValue) ? selectedValue : dates[0];
+}
+
+function populateRangeFilters() {
+  const dates = getMapDates(state.selectedMap);
+  if (!rangeBeforeStart || !rangeBeforeEnd || !rangeAfterStart || !rangeAfterEnd) return;
+
+  if (dates.length === 0) {
+    fillRangeSelect(rangeBeforeStart, dates);
+    fillRangeSelect(rangeBeforeEnd, dates);
+    fillRangeSelect(rangeAfterStart, dates);
+    fillRangeSelect(rangeAfterEnd, dates);
+    if (rangeCompareBtn) rangeCompareBtn.disabled = true;
+    setRangeStatus("No date data available for this map.", "error");
+    if (rangeMetricsGrid) rangeMetricsGrid.innerHTML = "";
+    return;
+  }
+
+  if (rangeCompareBtn) rangeCompareBtn.disabled = false;
+
+  const n = dates.length;
+  const split = Math.floor((n - 1) / 2);
+  const defaultBeforeStart = dates[0];
+  const defaultBeforeEnd = dates[split];
+  const defaultAfterStart = dates[Math.min(split + 1, n - 1)];
+  const defaultAfterEnd = dates[n - 1];
+
+  fillRangeSelect(rangeBeforeStart, dates, state.rangeSelection.beforeStart || defaultBeforeStart);
+  fillRangeSelect(rangeBeforeEnd, dates, state.rangeSelection.beforeEnd || defaultBeforeEnd);
+  fillRangeSelect(rangeAfterStart, dates, state.rangeSelection.afterStart || defaultAfterStart);
+  fillRangeSelect(rangeAfterEnd, dates, state.rangeSelection.afterEnd || defaultAfterEnd);
+
+  state.rangeSelection.beforeStart = rangeBeforeStart.value;
+  state.rangeSelection.beforeEnd = rangeBeforeEnd.value;
+  state.rangeSelection.afterStart = rangeAfterStart.value;
+  state.rangeSelection.afterEnd = rangeAfterEnd.value;
+
+  setRangeStatus("Pick date ranges and compare to see metric movement.");
+}
+
+function formatMetricValue(value, unit = "") {
+  const v = Number.isFinite(value) ? value : 0;
+  return unit === "%" ? `${v.toFixed(2)}%` : v.toFixed(2);
+}
+
+function compareDirectionClass(delta, better) {
+  if (Math.abs(delta) < 0.0005) return "flat";
+  const improved = better === "up" ? delta > 0 : delta < 0;
+  return improved ? "good" : "bad";
+}
+
+function renderRangeMetricCards(beforeData, afterData) {
+  if (!rangeMetricsGrid) return;
+  const beforeMetrics = beforeData?.metrics || {};
+  const afterMetrics = afterData?.metrics || {};
+
+  const cards = RANGE_METRIC_CONFIG.map((cfg) => {
+    const beforeVal = Number(beforeMetrics[cfg.key] ?? 0);
+    const afterVal = Number(afterMetrics[cfg.key] ?? 0);
+    const delta = afterVal - beforeVal;
+    const sign = delta > 0 ? "+" : "";
+    const deltaClass = compareDirectionClass(delta, cfg.better);
+
+    return `
+      <article class="range-metric-card">
+        <div class="range-metric-key">${cfg.label}</div>
+        <div class="range-metric-values">
+          <span class="range-metric-before">${formatMetricValue(beforeVal, cfg.unit)}</span>
+          <span class="range-metric-after">${formatMetricValue(afterVal, cfg.unit)}</span>
+        </div>
+        <span class="range-metric-delta ${deltaClass}">${sign}${formatMetricValue(delta, cfg.unit)} delta</span>
+      </article>
+    `;
+  }).join("");
+
+  rangeMetricsGrid.innerHTML = cards;
+}
+
+function isValidRange(start, end) {
+  return Boolean(start) && Boolean(end) && start <= end;
+}
+
+async function runRangeComparison() {
+  if (!rangeBeforeStart || !rangeBeforeEnd || !rangeAfterStart || !rangeAfterEnd) return;
+
+  const beforeStart = rangeBeforeStart.value;
+  const beforeEnd = rangeBeforeEnd.value;
+  const afterStart = rangeAfterStart.value;
+  const afterEnd = rangeAfterEnd.value;
+
+  state.rangeSelection.beforeStart = beforeStart;
+  state.rangeSelection.beforeEnd = beforeEnd;
+  state.rangeSelection.afterStart = afterStart;
+  state.rangeSelection.afterEnd = afterEnd;
+
+  if (!isValidRange(beforeStart, beforeEnd)) {
+    setRangeStatus("Before range is invalid. Ensure start date is not after end date.", "error");
+    return;
+  }
+  if (!isValidRange(afterStart, afterEnd)) {
+    setRangeStatus("After range is invalid. Ensure start date is not after end date.", "error");
+    return;
+  }
+
+  const mapId = state.selectedMap;
+  const makeUrl = (s, e) => `/api/range-metrics/${mapId}?start=${encodeURIComponent(s)}&end=${encodeURIComponent(e)}`;
+
+  if (rangeCompareBtn) rangeCompareBtn.disabled = true;
+  setRangeStatus("Comparing date ranges…");
+
+  try {
+    const [beforeData, afterData] = await Promise.all([
+      fetchJSON(makeUrl(beforeStart, beforeEnd)),
+      fetchJSON(makeUrl(afterStart, afterEnd)),
+    ]);
+
+    renderRangeMetricCards(beforeData, afterData);
+    setRangeStatus(
+      `Compared ${beforeData.match_count} matches (before) vs ${afterData.match_count} matches (after) on ${mapId}.`,
+      "success",
+    );
+  } catch (e) {
+    console.error("Range comparison failed:", e);
+    setRangeStatus("Failed to load range metrics. Check API availability and selected dates.", "error");
+  } finally {
+    if (rangeCompareBtn) rangeCompareBtn.disabled = false;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1304,6 +1511,7 @@ mapTabs.forEach(tab => {
     matchSelect.value   = "";
     populateDates();
     populateMatches();
+    populateRangeFilters();
     loadMatch("");
     loadMinimapImage();
     if (state.selectedHeatTypes.length > 0) {
@@ -1327,6 +1535,21 @@ matchSelect.addEventListener("change", () => loadMatch(matchSelect.value));
 showHumans.addEventListener("change", render);
 showBots.addEventListener("change", render);
 document.querySelectorAll("#eventFilters input").forEach(cb => cb.addEventListener("change", render));
+
+if (rangeCompareBtn) {
+  rangeCompareBtn.addEventListener("click", runRangeComparison);
+}
+
+[rangeBeforeStart, rangeBeforeEnd, rangeAfterStart, rangeAfterEnd].forEach((el) => {
+  if (!el) return;
+  el.addEventListener("change", () => {
+    state.rangeSelection.beforeStart = rangeBeforeStart?.value || "";
+    state.rangeSelection.beforeEnd = rangeBeforeEnd?.value || "";
+    state.rangeSelection.afterStart = rangeAfterStart?.value || "";
+    state.rangeSelection.afterEnd = rangeAfterEnd?.value || "";
+    setRangeStatus("Ranges updated. Click Compare Ranges to refresh metrics.");
+  });
+});
 
 heatBtns.forEach(btn => {
   btn.addEventListener("click", async () => {
