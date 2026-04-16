@@ -85,4 +85,29 @@ Tool 02 converts subjective map-feel judgments into measurable before/after evid
 2. avoid repeating ineffective iterations,
 3. prioritize the next tuning pass based on real movement and reward outcomes.
 
+---
+
+## Insight 3 - Future Work: Combined Tool 01 + Tool 02 Lens
+
+### Concept
+Future work is to combine Tool 01 (spatial overlap hotspots) and Tool 02 (before/after date-range deltas) into a single validation workflow.
+
+### What this combined insight would answer
+1. Which exact overlap hotspots changed after a design update?
+2. Did targeted hotspot fixes reduce dead space in the intended sectors?
+3. Did loot distribution improve without creating low-risk, high-reward pockets?
+4. Did map utilization and engagement move in the expected direction together?
+
+### Why this is valuable
+Tool 01 tells designers where the structural problem is on the map, and Tool 02 tells designers whether the latest change improved global outcomes over time.
+
+Combining them would create a stronger cause-and-effect loop:
+1. Identify problematic overlap zones.
+2. Apply localized map changes.
+3. Measure range-based metric movement.
+4. Confirm whether the local fix produced the intended global impact.
+
+### Expected designer impact
+This would reduce trial-and-error iteration by connecting hotspot-level diagnosis to date-range performance evidence in one continuous decision path.
+
 
