@@ -54,3 +54,39 @@ Over-punitive storm flow can dominate outcomes and reduce meaningful combat and 
 
 ---
 
+## Feature Update - Multi-Heatmap Overlap Explorer (Designer Tool 01)
+
+### What this feature does
+The map now supports selecting and overlaying multiple heatmaps at once (Kill Zones, Death Zones, Traffic, Loot Zones, Storm Deaths), instead of forcing one layer at a time.
+
+When multiple layers are active:
+- The system detects overlap hotspots (areas where 2+ selected heatmaps are simultaneously high).
+- The system also flags isolated hotspots (areas where one selected heatmap is high but others are weak).
+- Marker icons are drawn directly on the map at those locations.
+- Hovering a marker shows context in-place:
+  - overlap type(s)
+  - approximate location on the map
+  - per-layer intensity counts
+  - a short corrective design insight
+
+### Why a level designer should care
+This compresses a multi-step analysis workflow into a single visual pass. Instead of manually switching layers and mentally aligning hotspots, designers can immediately see where systems reinforce each other or conflict.
+
+Practical level-design value:
+1. Detect risk-reward imbalance faster:
+	- High loot + low combat often indicates over-safe reward pockets.
+	- High combat + low loot often indicates punishing, low-payoff chokepoints.
+2. Validate intended conflict architecture:
+	- Confirms whether high-value routes are truly contested.
+3. Guide targeted redistribution:
+	- Move loot, add routes, or reshape sightlines based on exact overlap cells.
+4. Reduce blind tuning:
+	- Hover markers provide evidence and rationale at the precise problem location.
+
+### Recommended design loop
+1. Select 2 to 4 heatmaps that match the question (for example Loot + Kill + Traffic).
+2. Inspect overlap and isolated markers on-map.
+3. Apply local map changes (loot anchor, route branching, encounter pressure).
+4. Re-run and compare marker density/placement until hotspots align with intended pacing.
+
+

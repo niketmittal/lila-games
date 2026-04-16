@@ -96,21 +96,27 @@
 
       <!-- Heatmap -->
       <section class="panel">
-        <div class="panel-label">HEATMAP OVERLAY</div>
+        <div class="panel-label">HEATMAP OVERLAY (MULTI)</div>
         <div class="heatmap-btns">
-          <button class="heat-btn active" data-heat="off">Off</button>
           <button class="heat-btn" data-heat="KillZones">Kill Zones</button>
           <button class="heat-btn" data-heat="DeathZones">Death Zones</button>
           <button class="heat-btn" data-heat="Traffic">Traffic</button>
           <button class="heat-btn" data-heat="LootZones">Loot Zones</button>
           <button class="heat-btn" data-heat="StormDeaths">Storm Deaths</button>
         </div>
-        <div class="heatmap-status" id="heatmapStatus"></div>
+        <button class="heat-clear-btn" id="clearHeatmaps" type="button">Clear Selection</button>
+        <div class="heatmap-status" id="heatmapStatus">Select one or more heatmaps to overlay.</div>
+
+        <div class="heatmap-chart-wrap hidden" id="heatmapChartWrap">
+          <div class="heatmap-chart-title">INTENSITY SCALE</div>
+          <div class="heatmap-chart" id="heatmapChart"></div>
+        </div>
+        <div class="heatmap-note">Hover map markers to inspect overlap insights.</div>
       </section>
 
     </aside>
 
-    <!-- ── MAIN CONTENT (canvas + analytics) ─────────────────────────────── -->
+    <!-- ── MAIN CONTENT (canvas + timeline) ─────────────────────────────── -->
     <main class="main-content">
 
       <!-- Canvas Area -->
@@ -172,15 +178,6 @@
             <option value="8">8x</option>
             <option value="16">16x</option>
           </select>
-        </div>
-      </div>
-
-      <!-- ── INLINE ANALYTICS PANEL ──────────────────────────── -->
-      <div class="analytics-bar">
-        <div class="analytics-bar-title">📊 Match Analytics</div>
-        <div class="insight-highlights" id="insightHighlights"></div>
-        <div id="analyticsContent">
-          <div class="analytics-empty">Select a match to see analytics.</div>
         </div>
       </div>
 

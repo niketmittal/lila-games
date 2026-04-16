@@ -1,6 +1,6 @@
 /**
  * app.js – LILA BLACK Player Journey Visualizer
- * Heatmaps, prev/next match navigation, and inline analytics.
+ * Heatmaps, multi-layer overlap markers, prev/next match navigation.
  */
 
 "use strict";
@@ -36,15 +36,34 @@ const EVT_CHECKBOX_MAP = {
   Loot:          "evtLoot",
 };
 
-// Heatmap types: button → one or more event types to combine
+// Heatmap types: button -> one or more event types to combine.
 const HEAT_SOURCES = {
-  off:          [],
   KillZones:    ["Kill", "BotKill"],
   DeathZones:   ["Killed", "BotKilled"],
   Traffic:      ["Position"],
   LootZones:    ["Loot"],
   StormDeaths:  ["KilledByStorm"],
 };
+
+const HEAT_LABELS = {
+  KillZones:   "Kill Zones",
+  DeathZones:  "Death Zones",
+  Traffic:     "Traffic",
+  LootZones:   "Loot Zones",
+  StormDeaths: "Storm Deaths",
+};
+
+// Per-heatmap color mapping (uses existing theme variables).
+// Requested mapping: kills=red, loot=green, storm=purple, traffic=blue.
+const HEAT_COLOR_VAR = {
+  KillZones:   "--red",
+  DeathZones:  "--orange",
+  Traffic:     "--accent2",
+  LootZones:   "--green",
+  StormDeaths: "--purple",
+};
+
+const HEAT_BANDS = 5;
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -58,9 +77,13 @@ const state = {
   matchList:      [],          // flat ordered list for prev/next
   matchListIndex: -1,
   mapImage:       null,
-  heatmapType:    "off",
-  heatmapData:    null,
-  heatmapCacheKey: null,
+  selectedHeatTypes: [],
+  heatmapLayersByType: {},
+  heatmapStatsByType: {},
+  heatmapLayerCache: {},
+  heatmapCanvasCache: {},
+  overlapMarkers: [],
+  activeHeatRequestId: 0,
   heatmapMessage: "",
   index:          null,
   playback: {
@@ -94,7 +117,9 @@ const showHumans = document.getElementById("showHumans");
 const showBots   = document.getElementById("showBots");
 const heatBtns   = document.querySelectorAll(".heat-btn");
 const heatmapStatus = document.getElementById("heatmapStatus");
-const insightHighlights = document.getElementById("insightHighlights");
+const clearHeatmapsBtn = document.getElementById("clearHeatmaps");
+const heatmapChartWrap = document.getElementById("heatmapChartWrap");
+const heatmapChart = document.getElementById("heatmapChart");
 
 const prevMatchBtn = document.getElementById("prevMatch");
 const nextMatchBtn = document.getElementById("nextMatch");
@@ -128,6 +153,115 @@ async function fetchJSON(url) {
 
 function lerp(a, b, t) { return a + (b - a) * t; }
 
+function clamp(v, lo, hi) {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+function getCssVar(name, fallback = "") {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+function hexToRgb(hex) {
+  const s = String(hex || "").trim().replace("#", "");
+  if (s.length === 3) {
+    const r = parseInt(s[0] + s[0], 16);
+    const g = parseInt(s[1] + s[1], 16);
+    const b = parseInt(s[2] + s[2], 16);
+    return { r, g, b };
+  }
+  if (s.length === 6) {
+    const r = parseInt(s.slice(0, 2), 16);
+    const g = parseInt(s.slice(2, 4), 16);
+    const b = parseInt(s.slice(4, 6), 16);
+    return { r, g, b };
+  }
+  return { r: 0, g: 229, b: 255 }; // fallback to accent-like cyan
+}
+
+function mixRgb(a, b, t) {
+  const tt = clamp(t, 0, 1);
+  return {
+    r: Math.round(lerp(a.r, b.r, tt)),
+    g: Math.round(lerp(a.g, b.g, tt)),
+    b: Math.round(lerp(a.b, b.b, tt)),
+  };
+}
+
+function heatBaseColorRgb(heatType) {
+  const cssVar = HEAT_COLOR_VAR[heatType] || "--accent2";
+  const hex = getCssVar(cssVar, "#0ea5e9");
+  return hexToRgb(hex);
+}
+
+function heatColorForIntensity(baseRgb, t) {
+  // Low intensity: very light tint; high intensity: darker but still saturated.
+  const low = mixRgb(baseRgb, { r: 255, g: 255, b: 255 }, 0.86);
+  const high = mixRgb(baseRgb, { r: 0, g: 0, b: 0 }, 0.20);
+  return mixRgb(low, high, t);
+}
+
+function heatIntensityCurve(v) {
+  // Exaggerate hotspots so concentrated zones stand out.
+  const vv = clamp(v, 0, 1);
+  return Math.pow(vv, 1.8);
+}
+
+function getHeatBandIndex(vNorm, bands = HEAT_BANDS) {
+  // Explicit stepped buckets improve perceptual separation on the map.
+  const v = clamp(vNorm, 0, 1);
+  if (v <= 0) return 0;
+  const idx = Math.ceil(v * bands) - 1;
+  return clamp(idx, 0, bands - 1);
+}
+
+function getHeatBandColor(baseRgb, bandIndex, bands = HEAT_BANDS) {
+  const t = (bandIndex + 1) / bands;
+  const shaped = heatIntensityCurve(t);
+  return heatColorForIntensity(baseRgb, shaped);
+}
+
+function getHeatBandForCount(count, breaks) {
+  if (!count || !Array.isArray(breaks) || breaks.length === 0) return -1;
+  for (let i = 0; i < breaks.length; i++) {
+    if (count <= breaks[i]) return i;
+  }
+  return breaks.length - 1;
+}
+
+function buildHeatBreaks(nonZeroCounts, maxCell, maxBands = HEAT_BANDS) {
+  if (!nonZeroCounts.length || maxCell <= 0) return [];
+
+  const sorted = [...nonZeroCounts].sort((a, b) => a - b);
+  const raw = [];
+  for (let i = 1; i <= maxBands; i++) {
+    const q = i / maxBands;
+    const idx = Math.min(sorted.length - 1, Math.floor(q * (sorted.length - 1)));
+    raw.push(sorted[idx]);
+  }
+
+  const breaks = Array.from(new Set(raw.filter(v => v > 0))).sort((a, b) => a - b);
+  if (breaks.length === 0) return [maxCell];
+
+  if (breaks[breaks.length - 1] !== maxCell) breaks[breaks.length - 1] = maxCell;
+  return breaks;
+}
+
+function getHeatLegendLevels(maxCell) {
+  if (!maxCell) return [];
+  if (maxCell <= HEAT_BANDS) {
+    return Array.from({ length: maxCell }, (_, i) => i + 1);
+  }
+  const raw = [
+    1,
+    Math.max(1, Math.round(maxCell * 0.25)),
+    Math.max(1, Math.round(maxCell * 0.5)),
+    Math.max(1, Math.round(maxCell * 0.75)),
+    maxCell,
+  ];
+  return Array.from(new Set(raw)).sort((a, b) => a - b);
+}
+
 function gridDensity(pts, cells = 32) {
   const grid = Array.from({ length: cells }, () => new Array(cells).fill(0));
   for (const [px, py] of pts) {
@@ -138,10 +272,173 @@ function gridDensity(pts, cells = 32) {
   return grid;
 }
 
-function setActiveHeatButton(type) {
+function percentile(values, q) {
+  if (!values || values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const qq = clamp(q, 0, 1);
+  const idx = (sorted.length - 1) * qq;
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo];
+  const t = idx - lo;
+  return lerp(sorted[lo], sorted[hi], t);
+}
+
+function zoneNameForCell(gx, gy, cells) {
+  const cols = ["West", "Center", "East"];
+  const rows = ["North", "Mid", "South"];
+  const col = Math.min(2, Math.max(0, Math.floor((gx / cells) * 3)));
+  const row = Math.min(2, Math.max(0, Math.floor((gy / cells) * 3)));
+  return `${rows[row]}-${cols[col]}`;
+}
+
+function describeCell(gx, gy, cells) {
+  const x = Math.round(((gx + 0.5) / cells) * 100);
+  const y = Math.round(((gy + 0.5) / cells) * 100);
+  return `${zoneNameForCell(gx, gy, cells)} (${x}%, ${y}%)`;
+}
+
+function updateHeatSelectionUI() {
+  const selected = new Set(state.selectedHeatTypes);
   heatBtns.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.heat === type);
+    const type = btn.dataset.heat;
+    btn.classList.toggle("active", selected.has(type));
   });
+}
+
+function formatHeatType(type) {
+  return HEAT_LABELS[type] || type;
+}
+
+function markerColorForTypes(types) {
+  if (!types || types.length === 0) return "#e2e8f0";
+  if (types.length === 1) {
+    const rgb = heatBaseColorRgb(types[0]);
+    return `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+  }
+  return "#f8fafc";
+}
+
+function pickSpreadMarkers(sortedCandidates, limit = 10, minCellDistance = 3) {
+  const chosen = [];
+  for (const candidate of sortedCandidates) {
+    if (chosen.length >= limit) break;
+    const tooClose = chosen.some(sel => {
+      const dx = sel.gx - candidate.gx;
+      const dy = sel.gy - candidate.gy;
+      return (dx * dx + dy * dy) < (minCellDistance * minCellDistance);
+    });
+    if (!tooClose) chosen.push(candidate);
+  }
+  return chosen;
+}
+
+function computeOverlapMarkersForSelection(types, statsByType) {
+  if (!types || types.length === 0) return [];
+
+  const firstStats = statsByType[types[0]];
+  if (!firstStats || !Array.isArray(firstStats.grid) || firstStats.grid.length === 0) return [];
+
+  const cells = firstStats.cells;
+  const thresholds = {};
+  for (const type of types) {
+    const stats = statsByType[type];
+    if (!stats || !Array.isArray(stats.grid) || stats.grid.length !== cells) continue;
+    const nonZero = [];
+    for (let gy = 0; gy < cells; gy++) {
+      for (let gx = 0; gx < cells; gx++) {
+        const c = stats.grid[gy][gx];
+        if (c > 0) nonZero.push(c);
+      }
+    }
+    thresholds[type] = Math.max(1, Math.ceil(percentile(nonZero, 0.75)));
+  }
+
+  const overlapCandidates = [];
+  const isolatedCandidates = [];
+
+  for (let gy = 0; gy < cells; gy++) {
+    for (let gx = 0; gx < cells; gx++) {
+      const presentTypes = [];
+      const highTypes = [];
+      const details = [];
+
+      for (const type of types) {
+        const stats = statsByType[type];
+        if (!stats || !stats.grid?.[gy]) continue;
+        const count = stats.grid[gy][gx];
+        if (count > 0) presentTypes.push(type);
+        const highCutoff = thresholds[type] || 1;
+        if (count >= highCutoff) highTypes.push(type);
+        details.push({ type, count, highCutoff });
+      }
+
+      if (presentTypes.length === 0) continue;
+
+      if (highTypes.length >= 2) {
+        const score = highTypes.reduce((acc, type) => {
+          const d = details.find(v => v.type === type);
+          return acc + ((d?.count || 0) / Math.max(1, d?.highCutoff || 1));
+        }, 0);
+
+        overlapCandidates.push({
+          gx,
+          gy,
+          kind: "overlap",
+          score,
+          types: highTypes,
+          details,
+          title: `Overlap hotspot: ${highTypes.map(formatHeatType).join(" + ")}`,
+          insight: "High-intensity overlap suggests concentrated contest potential.",
+        });
+        continue;
+      }
+
+      if (highTypes.length === 1 && types.length > 1) {
+        const dominant = highTypes[0];
+        const dominantDetail = details.find(v => v.type === dominant);
+        const others = details.filter(v => v.type !== dominant);
+        const othersNorm = others.reduce((acc, item) => acc + (item.count / Math.max(1, item.highCutoff)), 0) / Math.max(1, others.length);
+        const dominantNorm = (dominantDetail?.count || 0) / Math.max(1, dominantDetail?.highCutoff || 1);
+        const isolationScore = dominantNorm - othersNorm;
+        if (isolationScore < 0.45) continue;
+
+        const hasLoot = dominant === "LootZones";
+        const hasKill = dominant === "KillZones" || dominant === "DeathZones";
+        let insight = "One heatmap dominates while others are weak; distribution balance may be off.";
+        if (hasLoot) insight = "Loot concentration is high but pressure is low; route conflict or objective pressure here.";
+        if (hasKill) insight = "Combat pressure is high with weak supporting reward; add loot or alternate path options.";
+
+        isolatedCandidates.push({
+          gx,
+          gy,
+          kind: "isolated",
+          score: isolationScore,
+          types: [dominant],
+          details,
+          title: `Isolated hotspot: ${formatHeatType(dominant)}`,
+          insight,
+        });
+      }
+    }
+  }
+
+  overlapCandidates.sort((a, b) => b.score - a.score);
+  isolatedCandidates.sort((a, b) => b.score - a.score);
+
+  const selectedOverlap = pickSpreadMarkers(overlapCandidates, 8, 3);
+  const selectedIsolated = pickSpreadMarkers(isolatedCandidates, 6, 3);
+
+  const markers = selectedOverlap.concat(selectedIsolated).map(item => ({
+    ...item,
+    x: ((item.gx + 0.5) / cells) * 1024,
+    y: ((item.gy + 0.5) / cells) * 1024,
+    radius: item.kind === "overlap" ? 10 : 8,
+    color: markerColorForTypes(item.types),
+    location: describeCell(item.gx, item.gy, cells),
+  }));
+
+  return markers;
 }
 
 function setActiveMapTab(mapId) {
@@ -369,6 +666,8 @@ async function init() {
     populateDates();
     populateMatches();
     loadMinimapImage();
+    updateHeatSelectionUI();
+    heatmapStatus.textContent = "Select one or more heatmaps to overlay.";
   } catch (e) {
     console.error("Failed to load index:", e);
   } finally {
@@ -456,10 +755,10 @@ async function loadMatch(matchId) {
     stopPlayback();
     state.matchData = null; state.selectedMatch = null;
     state.matchListIndex = -1;
-    overlay.classList.remove("hidden");
+    if (state.selectedHeatTypes.length > 0) overlay.classList.add("hidden");
+    else overlay.classList.remove("hidden");
     initializeTimeline(null);
     render(); updateNavButtons();
-    renderAnalytics();
     return;
   }
 
@@ -476,11 +775,7 @@ async function loadMatch(matchId) {
     overlay.classList.add("hidden");
     updateNavButtons();
 
-    if (state.heatmapType !== "off") {
-      await loadHeatmap(state.selectedMap, state.heatmapType);
-    }
     render();
-    renderAnalytics();
   } catch (e) {
     console.error("Failed to load match:", e);
   } finally {
@@ -502,117 +797,295 @@ function updateMatchStats() {
 // HEATMAP — combines multiple event type files per button
 // ═══════════════════════════════════════════════════════════════
 
-let heatCanvas = null;
+async function loadHeatLayer(mapId, heatType) {
+  const cacheKey = `${mapId}_${heatType}`;
+  if (state.heatmapLayerCache[cacheKey]) {
+    return state.heatmapLayerCache[cacheKey];
+  }
 
-async function loadHeatmap(mapId, heatType) {
   const sources = HEAT_SOURCES[heatType] || [];
+  let combined = [];
+  let message = "";
+
   if (sources.length === 0) {
-    state.heatmapData = null;
-    state.heatmapCacheKey = null;
+    const emptyPayload = {
+      type: heatType,
+      points: [],
+      stats: computeHeatmapStats([]),
+      message: "",
+    };
+    state.heatmapLayerCache[cacheKey] = emptyPayload;
+    return emptyPayload;
+  }
+
+  const results = await Promise.allSettled(
+    sources.map(evt => fetchJSON(`/api/heatmap/${mapId}/${evt}`))
+  );
+
+  const missing = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled" && Array.isArray(r.value)) {
+      combined = combined.concat(r.value);
+    } else {
+      missing.push(sources[i]);
+    }
+  });
+
+  if (combined.length === 0) {
+    message = `${formatHeatType(heatType)} has no points.`;
+  } else if (missing.length > 0) {
+    message = `${formatHeatType(heatType)} partial: missing ${missing.join(", ")}.`;
+  }
+
+  const payload = {
+    type: heatType,
+    points: combined,
+    stats: computeHeatmapStats(combined),
+    message,
+  };
+  state.heatmapLayerCache[cacheKey] = payload;
+  return payload;
+}
+
+async function refreshSelectedHeatmaps() {
+  const types = [...state.selectedHeatTypes];
+  if (types.length === 0) {
+    state.heatmapLayersByType = {};
+    state.heatmapStatsByType = {};
+    state.overlapMarkers = [];
     state.heatmapMessage = "";
-    heatmapStatus.textContent = "";
-    heatCanvas = null;
+    heatmapStatus.textContent = "Select one or more heatmaps to overlay.";
+    renderHeatmapChart();
     return;
   }
 
-  const cacheKey = `${mapId}_${heatType}`;
-  if (state.heatmapCacheKey === cacheKey) return; // already loaded
-
-  showLoading("Loading heatmap data…");
+  const requestId = ++state.activeHeatRequestId;
+  showLoading("Loading selected heatmaps…");
   try {
-    // Fetch all source files in parallel and combine points
-    const results = await Promise.allSettled(
-      sources.map(evt => fetchJSON(`/api/heatmap/${mapId}/${evt}`))
-    );
-    let combined = [];
-    const missing = [];
-    results.forEach((r, i) => {
-      if (r.status === "fulfilled" && Array.isArray(r.value)) {
-        combined = combined.concat(r.value);
-      } else {
-        missing.push(sources[i]);
-      }
+    const results = await Promise.all(types.map(type => loadHeatLayer(state.selectedMap, type)));
+    if (requestId !== state.activeHeatRequestId) return;
+
+    const layers = {};
+    const statsByType = {};
+    const messages = [];
+    results.forEach((layer) => {
+      layers[layer.type] = layer.points;
+      statsByType[layer.type] = layer.stats;
+      if (layer.message) messages.push(layer.message);
     });
 
-    state.heatmapData    = combined;
-    state.heatmapCacheKey = cacheKey;
+    state.heatmapLayersByType = layers;
+    state.heatmapStatsByType = statsByType;
+    state.overlapMarkers = computeOverlapMarkersForSelection(types, statsByType);
+    state.heatmapMessage = messages.join(" ");
 
-    if (combined.length === 0) {
-      state.heatmapMessage = `No ${heatType} points for ${mapId}.`;
-    } else if (missing.length > 0) {
-      state.heatmapMessage = `Partial ${heatType}: missing ${missing.join(", ")}.`;
-    } else {
-      state.heatmapMessage = "";
-    }
-
-    heatmapStatus.textContent = state.heatmapMessage;
-    heatCanvas = null; // invalidate cached render
+    const selectedText = `${types.length} layer${types.length !== 1 ? "s" : ""}: ${types.map(formatHeatType).join(", ")}`;
+    heatmapStatus.textContent = state.heatmapMessage ? `${selectedText}. ${state.heatmapMessage}` : selectedText;
+    renderHeatmapChart();
   } catch (e) {
     console.warn("Heatmap load error:", e);
-    state.heatmapData = null; state.heatmapCacheKey = null;
-    state.heatmapMessage = `Heatmap unavailable for ${mapId}.`;
+    if (requestId !== state.activeHeatRequestId) return;
+    state.heatmapLayersByType = {};
+    state.heatmapStatsByType = {};
+    state.overlapMarkers = [];
+    state.heatmapMessage = `Heatmap unavailable for ${state.selectedMap}.`;
     heatmapStatus.textContent = state.heatmapMessage;
+    renderHeatmapChart();
   } finally {
     hideLoading();
   }
 }
 
-function buildHeatmapCanvas(points) {
+function clearSelectedHeatmaps() {
+  state.selectedHeatTypes = [];
+  state.heatmapLayersByType = {};
+  state.heatmapStatsByType = {};
+  state.overlapMarkers = [];
+  state.heatmapMessage = "";
+  updateHeatSelectionUI();
+  heatmapStatus.textContent = "Select one or more heatmaps to overlay.";
+  renderHeatmapChart();
+}
+
+function buildHeatmapCanvas(points, heatType, stats) {
   const SIZE = 1024;
-  const MAX_SAMPLE = 15000;
-
-  let pts = points;
-  if (pts.length > MAX_SAMPLE) {
-    const step = Math.ceil(pts.length / MAX_SAMPLE);
-    pts = pts.filter((_, i) => i % step === 0);
-  }
-
-  // Adaptive radius: larger when fewer points so sparse data is still visible
-  const RADIUS = pts.length < 200 ? 60 : pts.length < 1000 ? 40 : pts.length < 5000 ? 28 : 18;
 
   const dc = document.createElement("canvas");
   dc.width = dc.height = SIZE;
   const g  = dc.getContext("2d");
 
-  // Additive blending: overlapping blobs stack up to bright hot zones
-  g.globalCompositeOperation = "lighter";
-
-  const baseAlpha = Math.min(0.3, 6 / Math.sqrt(Math.max(pts.length, 1)));
-
-  for (const [px, py] of pts) {
-    const grad = g.createRadialGradient(px, py, 0, px, py, RADIUS);
-    grad.addColorStop(0,   `rgba(255,255,255,${baseAlpha})`);
-    grad.addColorStop(0.5, `rgba(255,255,255,${baseAlpha * 0.4})`);
-    grad.addColorStop(1,   "rgba(255,255,255,0)");
-    g.fillStyle = grad;
-    g.beginPath(); g.arc(px, py, RADIUS, 0, Math.PI * 2); g.fill();
+  if (!stats || !Array.isArray(stats.grid) || !stats.grid.length || !stats.breaks?.length) {
+    return dc;
   }
 
-  // Read pixels and apply hot colormap
-  g.globalCompositeOperation = "source-over";
-  const imgData = g.getImageData(0, 0, SIZE, SIZE);
-  const d = imgData.data;
+  const baseRgb = heatBaseColorRgb(heatType);
+  const bands = stats.breaks.length;
+  const cellSize = SIZE / stats.cells;
 
-  let maxV = 0;
-  for (let i = 0; i < d.length; i += 4) if (d[i] > maxV) maxV = d[i];
-  if (maxV === 0) maxV = 1;
+  for (let gy = 0; gy < stats.cells; gy++) {
+    const row = stats.grid[gy];
+    for (let gx = 0; gx < stats.cells; gx++) {
+      const count = row[gx];
+      const band = getHeatBandForCount(count, stats.breaks);
+      if (band < 0) continue;
 
-  for (let i = 0; i < d.length; i += 4) {
-    const v = d[i] / maxV;
-    if (v < 0.02) { d[i+3] = 0; continue; }
-
-    let r, gr, b;
-    if (v < 0.25)      { const t = v/0.25;          r=0;             gr=Math.round(lerp(0,200,t));   b=255; }
-    else if (v < 0.5)  { const t = (v-0.25)/0.25;   r=0;             gr=255;                          b=Math.round(lerp(200,0,t)); }
-    else if (v < 0.75) { const t = (v-0.5)/0.25;    r=Math.round(lerp(0,255,t)); gr=255;             b=0; }
-    else               { const t = (v-0.75)/0.25;   r=255;           gr=Math.round(lerp(255,0,t));   b=0; }
-
-    d[i]   = r; d[i+1] = gr; d[i+2] = b;
-    d[i+3] = Math.round(Math.pow(v, 0.55) * 220);
+      const rgb = getHeatBandColor(baseRgb, band, bands);
+      const opacity = clamp(0.2 + 0.75 * ((band + 1) / bands), 0, 0.98);
+      g.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity.toFixed(3)})`;
+      g.fillRect(gx * cellSize, gy * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
+    }
   }
 
-  g.putImageData(imgData, 0, 0);
+  // Slight blur keeps area transitions readable while preserving band separation.
+  const smooth = document.createElement("canvas");
+  smooth.width = smooth.height = SIZE;
+  const sg = smooth.getContext("2d");
+  sg.filter = "blur(6px)";
+  sg.drawImage(dc, 0, 0);
+
+  g.clearRect(0, 0, SIZE, SIZE);
+  g.drawImage(smooth, 0, 0);
+
   return dc;
+}
+
+function computeHeatmapStats(points, cells = 64) {
+  if (!points || points.length === 0) {
+    return { cells, totalPoints: 0, maxCell: 0, levels: [], breaks: [], grid: [] };
+  }
+
+  const grid = Array.from({ length: cells }, () => new Array(cells).fill(0));
+  for (const p of points) {
+    const px = p[0];
+    const py = p[1];
+    const gx = Math.min(cells - 1, Math.max(0, Math.floor((px / 1024) * cells)));
+    const gy = Math.min(cells - 1, Math.max(0, Math.floor((py / 1024) * cells)));
+    grid[gy][gx] += 1;
+  }
+
+  let maxCell = 0;
+  const nonZero = [];
+  for (let gy = 0; gy < cells; gy++) {
+    for (let gx = 0; gx < cells; gx++) {
+      const c = grid[gy][gx];
+      if (c > maxCell) maxCell = c;
+      if (c > 0) nonZero.push(c);
+    }
+  }
+
+  const breaks = buildHeatBreaks(nonZero, maxCell);
+  const levels = breaks.length ? breaks : getHeatLegendLevels(maxCell);
+
+  return {
+    cells,
+    totalPoints: points.length,
+    maxCell,
+    levels,
+    breaks,
+    grid,
+  };
+}
+
+function renderHeatmapChart() {
+  if (!heatmapChartWrap || !heatmapChart) return;
+
+  if (state.selectedHeatTypes.length !== 1) {
+    heatmapChartWrap.classList.add("hidden");
+    heatmapChart.innerHTML = "";
+    return;
+  }
+
+  const type = state.selectedHeatTypes[0];
+  const stats = state.heatmapStatsByType[type];
+  if (!stats || !stats.maxCell) {
+    heatmapChartWrap.classList.add("hidden");
+    heatmapChart.innerHTML = "";
+    return;
+  }
+
+  const unit = type === "KillZones" ? "kills"
+    : type === "DeathZones" ? "deaths"
+    : type === "LootZones" ? "loot"
+    : type === "StormDeaths" ? "storm deaths"
+    : type === "Traffic" ? "samples"
+    : "points";
+
+  const baseRgb = heatBaseColorRgb(type);
+  const max = stats.maxCell;
+  const levels = Array.isArray(stats.levels) ? stats.levels : [];
+  const totalLevels = Math.max(1, levels.length);
+
+  const ranges = levels.map((upper, i) => {
+    const min = i === 0 ? 1 : levels[i - 1] + 1;
+    return { min, max: upper };
+  });
+
+  const swatches = ranges.map((r, idx) => {
+    const rgb = getHeatBandColor(baseRgb, idx, totalLevels);
+    const color = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    const label = r.min === r.max ? `${r.max}` : `${r.min}-${r.max}`;
+    return `
+      <div class="heatmap-swatch" title="${label} ${unit} per cell">
+        <div class="heatmap-swatch-color" style="background:${color}"></div>
+        <div class="heatmap-swatch-label">${label}</div>
+      </div>
+    `;
+  }).join("");
+
+  heatmapChartWrap.classList.remove("hidden");
+  heatmapChart.innerHTML = `
+    <div class="heatmap-chart-meta">
+      Max hotspot: <strong>${max}</strong> ${unit} <span class="heatmap-chart-sub">(per ${stats.cells}×${stats.cells} cell)</span>
+    </div>
+    <div class="heatmap-legend">${swatches}</div>
+  `;
+}
+
+function drawOverlapMarkers(markers) {
+  if (!markers || markers.length === 0) return;
+
+  for (const marker of markers) {
+    const r = marker.radius || 9;
+    const isOverlap = marker.kind === "overlap";
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(marker.x, marker.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = isOverlap ? "rgba(255,255,255,0.2)" : "rgba(9,11,16,0.62)";
+    ctx.fill();
+
+    ctx.strokeStyle = marker.color;
+    ctx.lineWidth = isOverlap ? 2.6 : 2.0;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(marker.x, marker.y, Math.max(2.4, r * 0.35), 0, Math.PI * 2);
+    ctx.fillStyle = marker.color;
+    ctx.fill();
+
+    if (isOverlap) {
+      ctx.beginPath();
+      ctx.arc(marker.x, marker.y, r + 3.5, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.lineWidth = 1.3;
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.restore();
+  }
+}
+
+function findHoveredMarker(mx, my) {
+  for (const marker of state.overlapMarkers) {
+    const r = (marker.radius || 9) + 7;
+    const dx = mx - marker.x;
+    const dy = my - marker.y;
+    if ((dx * dx) + (dy * dy) <= (r * r)) {
+      return marker;
+    }
+  }
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -630,6 +1103,29 @@ function render() {
     ctx.fillText("Loading minimap…", 512, 512);
   }
 
+  // Multi-heatmap overlay (visible even without selecting a match)
+  const types = state.selectedHeatTypes;
+  if (types.length > 0) {
+    const alphaPerLayer = types.length === 1 ? 0.93 : types.length === 2 ? 0.72 : 0.58;
+    for (const type of types) {
+      const points = state.heatmapLayersByType[type];
+      const stats = state.heatmapStatsByType[type];
+      if (!points || points.length === 0 || !stats) continue;
+
+      const cacheKey = `${state.selectedMap}_${type}`;
+      let layerCanvas = state.heatmapCanvasCache[cacheKey];
+      if (!layerCanvas) {
+        layerCanvas = buildHeatmapCanvas(points, type, stats);
+        state.heatmapCanvasCache[cacheKey] = layerCanvas;
+      }
+
+      ctx.globalAlpha = alphaPerLayer;
+      ctx.drawImage(layerCanvas, 0, 0, 1024, 1024);
+    }
+    ctx.globalAlpha = 1.0;
+    drawOverlapMarkers(state.overlapMarkers);
+  }
+
   if (!state.matchData) return;
 
   const showH = showHumans.checked;
@@ -645,17 +1141,6 @@ function render() {
       .filter(([, id]) => document.getElementById(id)?.checked)
       .map(([type]) => type)
   );
-
-  // Heatmap overlay
-  if (state.heatmapType !== "off" && state.heatmapData && state.heatmapData.length > 0) {
-    if (!heatCanvas || heatCanvas._key !== state.heatmapCacheKey) {
-      heatCanvas = buildHeatmapCanvas(state.heatmapData);
-      heatCanvas._key = state.heatmapCacheKey;
-    }
-    ctx.globalAlpha = 0.72;
-    ctx.drawImage(heatCanvas, 0, 0, 1024, 1024);
-    ctx.globalAlpha = 1.0;
-  }
 
   // Player journeys — bold single-color track for clear readability.
   for (const player of state.matchData.players) {
@@ -725,142 +1210,25 @@ function render() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// INLINE ANALYTICS
+// ON-CANVAS OVERLAP INSIGHT TOOLTIPS
 // ═══════════════════════════════════════════════════════════════
 
-async function renderAnalytics() {
-  const panel = document.getElementById("analyticsContent");
-  if (!state.matchData) {
-    insightHighlights.innerHTML = "";
-    panel.innerHTML = `<div class="analytics-empty">Select a match to see analytics.</div>`;
-    return;
-  }
+function markerTooltipHtml(marker) {
+  const typeLine = marker.types?.length
+    ? marker.types.map(formatHeatType).join(" + ")
+    : "Heatmap hotspot";
 
-  const d = state.matchData;
-  const allEvents   = [];
-  const allPositions= [];
-  for (const p of d.players) {
-    for (const pos of p.positions) allPositions.push([pos.px, pos.py, p.is_bot]);
-    for (const evt of p.events)    allEvents.push({ ...evt, is_bot: p.is_bot, color: p.color });
-  }
+  const detailLine = (marker.details || [])
+    .filter(d => d.count > 0)
+    .map(d => `${formatHeatType(d.type)}: ${d.count}`)
+    .join(" | ");
 
-  const kills  = allEvents.filter(e => e.type === "Kill" || e.type === "BotKill");
-  const deaths = allEvents.filter(e => e.type === "Killed" || e.type === "BotKilled" || e.type === "KilledByStorm");
-  const loots  = allEvents.filter(e => e.type === "Loot");
-  const storms = allEvents.filter(e => e.type === "KilledByStorm");
-  const humanPos  = allPositions.filter(p => !p[2]);
-
-  // Grid-based analytics
-  const CELLS = 32;
-  const killGrid    = kills.length    ? gridDensity(kills.map(e  => [e.px, e.py]))  : null;
-  const trafficGrid = humanPos.length ? gridDensity(humanPos.map(p => [p[0], p[1]])) : null;
-
-  // Hot fight zone
-  let hotFightZone = null;
-  if (killGrid) {
-    let maxK = 0, bx = 0, by = 0;
-    for (let gy = 0; gy < CELLS; gy++)
-      for (let gx = 0; gx < CELLS; gx++)
-        if (killGrid[gy][gx] > maxK) { maxK = killGrid[gy][gx]; bx = gx; by = gy; }
-    if (maxK > 0) hotFightZone = { x: Math.round((bx+0.5)/CELLS*100), y: Math.round((by+0.5)/CELLS*100), count: maxK };
-  }
-
-  // Dead zones
-  let deadZones = 0;
-  if (trafficGrid) {
-    for (let gy = 3; gy < CELLS-3; gy++)
-      for (let gx = 3; gx < CELLS-3; gx++)
-        if (trafficGrid[gy][gx] === 0) deadZones++;
-  }
-
-  // OOB
-  const oob = allPositions.filter(p => p[0] < 0 || p[0] > 1024 || p[1] < 0 || p[1] > 1024).length;
-
-  const humanPlayers = d.players.filter(p => !p.is_bot);
-  const stormPct = deaths.length > 0 ? Math.round(storms.length / deaths.length * 100) : 0;
-  const avgLoot  = humanPlayers.length > 0 ? (loots.length / humanPlayers.length).toFixed(1) : "0";
-  const deadSpacePct = Math.round((deadZones / ((CELLS - 6) * (CELLS - 6))) * 100);
-  const engagementDensity = kills.length > 0 && hotFightZone
-    ? Math.round((hotFightZone.count / kills.length) * 100)
-    : 0;
-
-  const zoneLabels = [
-    "North-West", "North", "North-East",
-    "West", "Center", "East",
-    "South-West", "South", "South-East",
-  ];
-
-  const zoneStats = Array.from({ length: 9 }, (_, idx) => ({
-    label: zoneLabels[idx],
-    traffic: 0,
-    kills: 0,
-    deaths: 0,
-    loot: 0,
-  }));
-
-  const getZoneIndex = (px, py) => {
-    const col = Math.min(2, Math.max(0, Math.floor((px / 1024) * 3)));
-    const row = Math.min(2, Math.max(0, Math.floor((py / 1024) * 3)));
-    return row * 3 + col;
-  };
-
-  for (const p of allPositions) {
-    const [px, py, isBot] = p;
-    if (isBot) continue;
-    zoneStats[getZoneIndex(px, py)].traffic += 1;
-  }
-
-  for (const evt of allEvents) {
-    const zone = zoneStats[getZoneIndex(evt.px, evt.py)];
-    if (evt.type === "Kill" || evt.type === "BotKill") zone.kills += 1;
-    if (evt.type === "Killed" || evt.type === "BotKilled" || evt.type === "KilledByStorm") zone.deaths += 1;
-    if (evt.type === "Loot") zone.loot += 1;
-  }
-
-  const topTraffic = [...zoneStats].sort((a, b) => b.traffic - a.traffic)[0];
-  const topCombat  = [...zoneStats].sort((a, b) => b.kills - a.kills)[0];
-  const topLoot    = [...zoneStats].sort((a, b) => b.loot - a.loot)[0];
-
-  const chips = [];
-  chips.push(`<span class="highlight-chip ${deadSpacePct >= 45 ? "critical" : deadSpacePct >= 28 ? "warn" : "ok"}"><strong>Dead Space</strong> ${deadSpacePct}%</span>`);
-  chips.push(`<span class="highlight-chip ${stormPct >= 35 ? "critical" : stormPct >= 20 ? "warn" : "ok"}"><strong>Storm Pressure</strong> ${stormPct}% deaths</span>`);
-  chips.push(`<span class="highlight-chip ${engagementDensity >= 45 ? "warn" : "ok"}"><strong>Kill Cluster</strong> ${engagementDensity}% in hottest cell</span>`);
-  chips.push(`<span class="highlight-chip ok"><strong>Top Combat Zone</strong> ${topCombat.label}</span>`);
-  insightHighlights.innerHTML = chips.join("");
-
-  panel.innerHTML = `
-    <div class="analytics-section">
-      <div class="analytics-section-title">Quick Match Snapshot</div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-val">${humanPlayers.length}</div><div class="stat-key">Humans</div></div>
-        <div class="stat-card"><div class="stat-val">${kills.length}</div><div class="stat-key">Kills</div></div>
-        <div class="stat-card"><div class="stat-val">${stormPct}%</div><div class="stat-key">Storm Death Share</div></div>
-        <div class="stat-card"><div class="stat-val">${deadSpacePct}%</div><div class="stat-key">Dead Space</div></div>
-        <div class="stat-card"><div class="stat-val">${avgLoot}</div><div class="stat-key">Loot / Human</div></div>
-        <div class="stat-card"><div class="stat-val">${engagementDensity}%</div><div class="stat-key">Kill Cluster</div></div>
-      </div>
-    </div>
-
-    <div class="analytics-section">
-      <div class="analytics-section-title">Zone Rollups</div>
-      <div class="zone-grid">
-        <div class="zone-card">
-          <div class="zone-head">Combat</div>
-          <div class="zone-name">${topCombat.label}</div>
-          <div class="zone-meta">${topCombat.kills} kills<br>${topCombat.deaths} deaths</div>
-        </div>
-        <div class="zone-card">
-          <div class="zone-head">Traffic</div>
-          <div class="zone-name">${topTraffic.label}</div>
-          <div class="zone-meta">${topTraffic.traffic} human samples<br>high path usage</div>
-        </div>
-        <div class="zone-card">
-          <div class="zone-head">Loot</div>
-          <div class="zone-name">${topLoot.label}</div>
-          <div class="zone-meta">${topLoot.loot} pickups<br>route magnet</div>
-        </div>
-      </div>
-    </div>
+  return `
+    <strong style="color:${marker.color}">${marker.title}</strong><br>
+    <span style="color:#cbd5e1">${typeLine}</span><br>
+    <span style="color:#94a3b8">${marker.location}</span><br>
+    <span style="color:#e2e8f0">${marker.insight}</span>
+    ${detailLine ? `<br><span style="color:#94a3b8">${detailLine}</span>` : ""}
   `;
 }
 
@@ -869,12 +1237,26 @@ async function renderAnalytics() {
 // ═══════════════════════════════════════════════════════════════
 
 canvas.addEventListener("mousemove", (e) => {
-  if (!state.matchData) return;
-  const hasTimeline = state.playback.maxTs > state.playback.minTs;
-  const cursorTs = hasTimeline ? state.playback.currentTs : Number.POSITIVE_INFINITY;
   const rect = canvas.getBoundingClientRect();
   const mx = (e.clientX - rect.left) * (1024 / rect.width);
   const my = (e.clientY - rect.top)  * (1024 / rect.height);
+
+  const hoveredMarker = findHoveredMarker(mx, my);
+  if (hoveredMarker) {
+    tooltip.innerHTML = markerTooltipHtml(hoveredMarker);
+    tooltip.classList.add("visible");
+    tooltip.style.left = `${e.clientX - rect.left + 14}px`;
+    tooltip.style.top  = `${e.clientY - rect.top  - 10}px`;
+    return;
+  }
+
+  if (!state.matchData) {
+    tooltip.classList.remove("visible");
+    return;
+  }
+
+  const hasTimeline = state.playback.maxTs > state.playback.minTs;
+  const cursorTs = hasTimeline ? state.playback.currentTs : Number.POSITIVE_INFINITY;
   const HOVER_R = 18;
   let found = null;
 
@@ -914,16 +1296,22 @@ mapTabs.forEach(tab => {
     tab.classList.add("active");
     state.selectedMap   = tab.dataset.map;
     state.selectedDate  = "";
-    state.heatmapCacheKey = null;
-    heatCanvas          = null;
+    state.heatmapLayersByType = {};
+    state.heatmapStatsByType = {};
+    state.overlapMarkers = [];
+    state.heatmapCanvasCache = {};
     dateSelect.value    = "";
     matchSelect.value   = "";
-    heatmapStatus.textContent = "";
     populateDates();
     populateMatches();
     loadMatch("");
     loadMinimapImage();
-    if (state.heatmapType !== "off") loadHeatmap(state.selectedMap, state.heatmapType).then(render);
+    if (state.selectedHeatTypes.length > 0) {
+      refreshSelectedHeatmaps().then(render);
+    } else {
+      heatmapStatus.textContent = "Select one or more heatmaps to overlay.";
+      render();
+    }
   });
 });
 
@@ -942,20 +1330,31 @@ document.querySelectorAll("#eventFilters input").forEach(cb => cb.addEventListen
 
 heatBtns.forEach(btn => {
   btn.addEventListener("click", async () => {
-    heatBtns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
     const type = btn.dataset.heat;
-    state.heatmapType  = type;
-    heatCanvas = null;
-    if (type === "off") {
-      state.heatmapData = null;
-      state.heatmapMessage = "";
-      heatmapStatus.textContent = "";
-      render();
+    if (!type || !(type in HEAT_SOURCES)) return;
+
+    const idx = state.selectedHeatTypes.indexOf(type);
+    if (idx >= 0) {
+      state.selectedHeatTypes.splice(idx, 1);
+    } else {
+      state.selectedHeatTypes.push(type);
     }
-    else { await loadHeatmap(state.selectedMap, type); render(); }
+
+    updateHeatSelectionUI();
+    await refreshSelectedHeatmaps();
+    if (state.selectedHeatTypes.length > 0) overlay.classList.add("hidden");
+    else if (!state.matchData) overlay.classList.remove("hidden");
+    render();
   });
 });
+
+if (clearHeatmapsBtn) {
+  clearHeatmapsBtn.addEventListener("click", () => {
+    clearSelectedHeatmaps();
+    if (!state.matchData) overlay.classList.remove("hidden");
+    render();
+  });
+}
 
 playToggle.addEventListener("click", togglePlayback);
 
